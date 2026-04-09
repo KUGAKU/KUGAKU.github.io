@@ -1,0 +1,265 @@
+/* =========================================================
+   和風デザインシステム — 研究者ポートフォリオ
+   Japanese-inspired design system for a researcher portfolio
+   ========================================================= */
+
+:root {
+  /* ---------- Color Palette: 和色 (traditional Japanese hues) ---------- */
+  /* Background — 生成り (kinari / unbleached) */
+  --color-bg: #f5f0e6;
+  /* Surface — 胡粉 (gofun / shell white) */
+  --color-surface: #fbf7ee;
+  /* Surface alt — slightly warmer */
+  --color-surface-alt: #efe7d4;
+
+  /* Text — 墨 (sumi / ink) */
+  --color-text: #1f1c1a;
+  /* Secondary text — 鈍色 (nibiiro) */
+  --color-text-secondary: #6b6560;
+  /* Disabled — 薄墨 (usuzumi) */
+  --color-text-disabled: #a49d96;
+
+  /* Primary — 朱 (ake / vermillion) */
+  --color-primary: #b7282e;
+  --color-primary-dark: #8f1e22;
+
+  /* Secondary — 藍墨 (aisumi / indigo-ink) */
+  --color-accent: #1e3a5f;
+  --color-accent-soft: #4f7c8f; /* 浅葱 asagi */
+
+  /* Borders & dividers */
+  --color-border: #d9cfb8;
+  --color-border-strong: #b8ac8e;
+
+  /* Semantic */
+  --color-danger: #b7282e;
+  --color-warning: #c98a1b;
+  --color-success: #4a6b3c; /* 松葉色 matsuba */
+
+  /* ---------- Typography ---------- */
+  --font-serif-jp:
+    "Shippori Mincho", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho",
+    "YuMincho", "MS PMincho", serif;
+  --font-sans-jp:
+    "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic",
+    "Meiryo", system-ui, -apple-system, sans-serif;
+  --font-mono:
+    "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+    monospace;
+
+  /* ---------- Spacing scale (八 octaves) ---------- */
+  --space-xs: 0.25rem; /*  4px */
+  --space-sm: 0.5rem;  /*  8px */
+  --space-md: 1rem;    /* 16px */
+  --space-lg: 1.5rem;  /* 24px */
+  --space-xl: 2.5rem;  /* 40px */
+  --space-2xl: 4rem;   /* 64px */
+  --space-3xl: 6rem;   /* 96px */
+
+  /* ---------- Container ---------- */
+  --container-max: 72rem;  /* 1152px */
+  --container-narrow: 44rem; /* 704px */
+  --container-pad: clamp(1rem, 4vw, 2.5rem);
+
+  /* ---------- Elevation ---------- */
+  --shadow-1: 0 1px 2px rgba(31, 28, 26, 0.06);
+  --shadow-2: 0 4px 12px rgba(31, 28, 26, 0.08);
+  --shadow-3: 0 12px 32px rgba(31, 28, 26, 0.12);
+
+  /* ---------- Radius — 控えめ (subtle) ---------- */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* ---------- Motion ---------- */
+  --ease: cubic-bezier(0.2, 0.0, 0.0, 1.0);
+  --dur-fast: 150ms;
+  --dur-base: 240ms;
+}
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans-jp);
+  font-size: 16px;
+  line-height: 1.85;
+  letter-spacing: 0.04em;
+  font-feature-settings: "palt" 0, "kern" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  word-break: normal;
+  overflow-wrap: break-word;
+  line-break: strict;
+  /* Subtle traditional paper (和紙) texture using layered gradients */
+  background-image:
+    radial-gradient(
+      ellipse at top,
+      rgba(255, 252, 242, 0.6) 0%,
+      transparent 60%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(183, 40, 46, 0.008) 0px,
+      rgba(183, 40, 46, 0.008) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(30, 58, 95, 0.006) 0px,
+      rgba(30, 58, 95, 0.006) 1px,
+      transparent 1px,
+      transparent 7px
+    );
+  background-attachment: fixed;
+}
+
+img,
+picture,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---------- Typography ---------- */
+h1, h2, h3, h4 {
+  font-family: var(--font-serif-jp);
+  color: var(--color-text);
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin: 0 0 var(--space-md);
+  font-feature-settings: "palt" 1;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(1.35rem, 1.1rem + 1vw, 1.75rem);
+  letter-spacing: 0.1em;
+}
+
+h3 {
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+}
+
+p {
+  margin: 0 0 1.1em;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(30, 58, 95, 0.25);
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+ul, ol {
+  margin: 0 0 1.1em;
+  padding-left: 1.5em;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-surface-alt);
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-sm);
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-xl) 0;
+}
+
+/* ---------- Utility: container ---------- */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-inline: var(--container-pad);
+}
+
+.container--narrow {
+  max-width: var(--container-narrow);
+}
+
+/* ---------- Skip link ---------- */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--color-text);
+  color: var(--color-surface);
+  padding: var(--space-sm) var(--space-md);
+  z-index: 100;
+}
+.skip-link:focus {
+  left: var(--space-md);
+  top: var(--space-md);
+}
+
+/* ---------- Decorative Japanese flourish (縦線 vertical rule) ---------- */
+.kazari-line {
+  display: inline-block;
+  width: 1px;
+  height: 2.25em;
+  background: var(--color-border-strong);
+  margin: 0 var(--space-md);
+  vertical-align: middle;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  body {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

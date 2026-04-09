@@ -1,0 +1,333 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { notes } from "../data/notes";
+import { site } from "../data/site";
+
+// 新しい順に並び替え
+const sortedNotes = [...notes].sort((a, b) =>
+  a.date < b.date ? 1 : a.date > b.date ? -1 : 0
+);
+
+// 年ごとにグルーピング
+const grouped = sortedNotes.reduce<Record<string, typeof sortedNotes>>(
+  (acc, n) => {
+    const year = n.date.slice(0, 4);
+    (acc[year] ??= []).push(n);
+    return acc;
+  },
+  {}
+);
+const years = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
+---
+
+<BaseLayout
+  title="ノート"
+  description="noteに綴っている研究・思索・読書の記録。"
+>
+  <section class="page-hero">
+    <div class="container">
+      <p class="page-hero__eyebrow">Notes</p>
+      <h1 class="page-hero__title">ノート</h1>
+      <p class="page-hero__sub">
+        日々の思索と研究の記録を、note に綴っています
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--narrow">
+      <p class="intro">
+        こちらは<a
+          href={site.social.note || "https://note.com/"}
+          target="_blank"
+          rel="noopener noreferrer">note</a
+        >で公開している投稿の一覧です。各リンクを開くと、noteの記事ページに遷移します。
+      </p>
+
+      {
+        years.map((year) => (
+          <section class="year-group">
+            <header class="year-group__head">
+              <h2 class="year-group__year">{year}</h2>
+              <span class="year-group__rule" aria-hidden="true" />
+              <span class="year-group__count">
+                {grouped[year].length}{grouped[year].length === 1 ? " entry" : " entries"}
+              </span>
+            </header>
+            <ul class="note-list">
+              {grouped[year].map((n) => (
+                <li class="note-card">
+                  <a
+                    href={n.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="note-card__link"
+                    aria-label={`noteの記事「${n.title}」を開く`}
+                  >
+                    <div class="note-card__head">
+                      <time class="note-card__date" datetime={n.date}>
+                        {n.date}
+                      </time>
+                      <span class="note-card__source">note</span>
+                    </div>
+                    <h3 class="note-card__title">{n.title}</h3>
+                    {n.excerpt && (
+                      <p class="note-card__excerpt">{n.excerpt}</p>
+                    )}
+                    {n.tags && n.tags.length > 0 && (
+                      <ul class="note-card__tags">
+                        {n.tags.map((t) => (
+                          <li class="note-card__tag">#{t}</li>
+                        ))}
+                      </ul>
+                    )}
+                    <span class="note-card__cta" aria-hidden="true">
+                      記事を読む →
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+
+      {
+        sortedNotes.length === 0 && (
+          <p class="empty">まだ投稿はありません。</p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ========= Page hero (shared style with about) ========= */
+  .page-hero {
+    padding-block: var(--space-2xl);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+  }
+  .page-hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-primary) 50%,
+      transparent
+    );
+    opacity: 0.3;
+  }
+  .page-hero__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    margin: 0 0 var(--space-sm);
+  }
+  .page-hero__title {
+    font-family: var(--font-serif-jp);
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+    margin: 0 0 var(--space-sm);
+    letter-spacing: 0.12em;
+    border-left: 4px solid var(--color-primary);
+    padding-left: var(--space-lg);
+  }
+  .page-hero__sub {
+    color: var(--color-text-secondary);
+    font-family: var(--font-serif-jp);
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+
+  .section {
+    padding-block: var(--space-2xl);
+  }
+
+  .intro {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px dashed var(--color-border);
+  }
+
+  /* ========= Year group ========= */
+  .year-group {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .year-group__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .year-group__year {
+    font-family: var(--font-serif-jp);
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+    margin: 0;
+    color: var(--color-primary);
+  }
+
+  .year-group__rule {
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .year-group__count {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+  }
+
+  /* ========= Note cards ========= */
+  .note-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .note-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    transition:
+      border-color var(--dur-base) var(--ease),
+      box-shadow var(--dur-base) var(--ease),
+      transform var(--dur-base) var(--ease);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .note-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 3px;
+    background: var(--color-primary);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform var(--dur-base) var(--ease);
+  }
+
+  .note-card:hover,
+  .note-card:focus-within {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-2);
+    transform: translateY(-2px);
+  }
+  .note-card:hover::before,
+  .note-card:focus-within::before {
+    transform: scaleY(1);
+  }
+
+  .note-card__link {
+    display: block;
+    padding: var(--space-lg);
+    color: var(--color-text);
+    border-bottom: none;
+    text-decoration: none;
+  }
+
+  .note-card__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+  }
+
+  .note-card__date {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+  }
+
+  .note-card__source {
+    display: inline-block;
+    font-family: var(--font-serif-jp);
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--color-primary);
+    padding: 2px 8px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+  }
+
+  .note-card__title {
+    font-family: var(--font-serif-jp);
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    margin: 0 0 var(--space-sm);
+    line-height: 1.5;
+    transition: color var(--dur-base) var(--ease);
+  }
+
+  .note-card:hover .note-card__title {
+    color: var(--color-primary);
+  }
+
+  .note-card__excerpt {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin: 0 0 var(--space-md);
+    line-height: 1.8;
+  }
+
+  .note-card__tags {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-md);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .note-card__tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    background: var(--color-surface-alt);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .note-card__cta {
+    display: inline-block;
+    font-family: var(--font-serif-jp);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    transition: color var(--dur-base) var(--ease);
+  }
+
+  .note-card:hover .note-card__cta {
+    color: var(--color-primary);
+  }
+
+  .empty {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: var(--space-2xl) 0;
+  }
+</style>
