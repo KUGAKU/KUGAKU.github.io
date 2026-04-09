@@ -48,8 +48,8 @@ export const site: Site = {
     en: "",
   },
   description: {
-    ja: "苦学 Lab — エンジニア / コンサルタント / 情報学を専攻中。",
-    en: "Kugaku Lab — Engineer, consultant, and informatics major.",
+    ja: "苦学 Lab — エンジニアリング / コンサルティング / 情報学。",
+    en: "Kugaku Lab — Engineering, consulting, informatics.",
   },
   author: {
     name: {
@@ -58,8 +58,8 @@ export const site: Site = {
     },
     // 肩書き: 表示順に並べる
     roles: {
-      ja: ["エンジニア", "コンサルタント", "情報学を専攻中"],
-      en: ["Engineer", "Consultant", "Majoring in Informatics"],
+      ja: ["エンジニアリング", "コンサルティング", "情報学"],
+      en: ["Engineering", "Consulting", "Informatics"],
     },
     affiliation: { ja: "", en: "" },
     email: "",
