@@ -1,0 +1,550 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { profile } from "../../data/profile";
+import { site } from "../../data/site";
+import { getLangFromUrl, useTranslations, pick } from "../../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const authorName = pick(site.author.name, lang);
+const authorRole = pick(site.author.role, lang);
+const authorAffiliation = pick(site.author.affiliation, lang);
+// Always show the romanized name as a sub-label
+const nameSub = lang === "ja" ? "Kugaku" : "苦学";
+
+const bio = pick(profile.bio, lang);
+const hasBio = bio.length > 0;
+const hasInterests = profile.interests.length > 0;
+const hasCV = profile.cv.length > 0;
+const hasPublications = profile.publications.length > 0;
+const hasContact =
+  !!site.author.email ||
+  !!site.social.github ||
+  !!site.social.note ||
+  !!site.social.twitter ||
+  !!site.social.scholar ||
+  !!site.social.orcid;
+const hasAnyProfileInfo =
+  hasBio || hasInterests || hasCV || hasPublications || hasContact;
+---
+
+<BaseLayout
+  title={t("about.title")}
+  description={`${authorName} — ${t("about.sub")}`}
+>
+  <section class="page-hero">
+    <div class="container">
+      <p class="page-hero__eyebrow">{t("about.eyebrow")}</p>
+      <h1 class="page-hero__title">{t("about.title")}</h1>
+      <p class="page-hero__sub">{t("about.sub")}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container--narrow">
+      <!-- ===== Identity ===== -->
+      <div class="identity">
+        <h2 class="identity__name">{authorName}</h2>
+        <p class="identity__name-sub">{nameSub}</p>
+        {authorRole && <p class="identity__role">{authorRole}</p>}
+        {authorAffiliation && (
+          <p class="identity__affiliation">{authorAffiliation}</p>
+        )}
+      </div>
+
+      <!-- ===== Bio ===== -->
+      {
+        hasBio && (
+          <div class="bio">
+            <p>{bio}</p>
+          </div>
+        )
+      }
+
+      <!-- ===== Placeholder (when nothing is filled in yet) ===== -->
+      {
+        !hasAnyProfileInfo && (
+          <div class="placeholder">
+            <p class="placeholder__text">{t("about.placeholder.text")}</p>
+            <p class="placeholder__hint">
+              {t("about.placeholder.hintPre")}
+              <code>src/data/profile.ts</code>
+              {t("about.placeholder.hintPost")}
+            </p>
+          </div>
+        )
+      }
+
+      <!-- ===== Interests ===== -->
+      {
+        hasInterests && (
+          <div class="block">
+            <h3 class="block__title">
+              <span class="block__title-main">
+                {t("about.block.interests.main")}
+              </span>
+              <span class="block__title-sub">
+                {t("about.block.interests.sub")}
+              </span>
+            </h3>
+            <ul class="tag-list">
+              {profile.interests.map((i) => (
+                <li class="tag">
+                  <span class="tag__main">
+                    {lang === "ja" ? i.ja : i.en || i.ja}
+                  </span>
+                  <span class="tag__sub">
+                    {lang === "ja" ? i.en : i.ja}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      <!-- ===== CV ===== -->
+      {
+        hasCV && (
+          <div class="block">
+            <h3 class="block__title">
+              <span class="block__title-main">{t("about.block.cv.main")}</span>
+              <span class="block__title-sub">{t("about.block.cv.sub")}</span>
+            </h3>
+            <ol class="timeline">
+              {profile.cv.map((entry) => (
+                <li class="timeline__item">
+                  <div class="timeline__year">{entry.year}</div>
+                  <div class="timeline__body">
+                    <p class="timeline__title">{pick(entry.title, lang)}</p>
+                    <p class="timeline__org">{pick(entry.org, lang)}</p>
+                    {pick(entry.detail, lang) && (
+                      <p class="timeline__detail">
+                        {pick(entry.detail, lang)}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )
+      }
+
+      <!-- ===== Publications ===== -->
+      {
+        hasPublications && (
+          <div class="block">
+            <h3 class="block__title">
+              <span class="block__title-main">{t("about.block.pub.main")}</span>
+              <span class="block__title-sub">{t("about.block.pub.sub")}</span>
+            </h3>
+            <ol class="pub-list">
+              {profile.publications.map((p) => (
+                <li class="pub-item">
+                  <div class="pub-item__year">{p.year}</div>
+                  <div class="pub-item__body">
+                    <p class="pub-item__title">
+                      {p.url ? (
+                        <a
+                          href={p.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {p.title}
+                        </a>
+                      ) : (
+                        p.title
+                      )}
+                    </p>
+                    <p class="pub-item__meta">
+                      {p.authors}
+                      {p.venue && (
+                        <>
+                          <span class="pub-item__sep" aria-hidden="true">
+                            /
+                          </span>
+                          <em class="pub-item__venue">{p.venue}</em>
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )
+      }
+
+      <!-- ===== Contact ===== -->
+      {
+        hasContact && (
+          <div class="block">
+            <h3 class="block__title">
+              <span class="block__title-main">
+                {t("about.block.contact.main")}
+              </span>
+              <span class="block__title-sub">
+                {t("about.block.contact.sub")}
+              </span>
+            </h3>
+            <p class="contact">{t("about.contact.body")}</p>
+            <ul class="contact-links">
+              {site.author.email && (
+                <li>
+                  <a href={`mailto:${site.author.email}`}>
+                    {site.author.email}
+                  </a>
+                </li>
+              )}
+              {site.social.github && (
+                <li>
+                  <a
+                    href={site.social.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    GitHub
+                  </a>
+                </li>
+              )}
+              {site.social.note && (
+                <li>
+                  <a
+                    href={site.social.note}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    note
+                  </a>
+                </li>
+              )}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ========= Page hero ========= */
+  .page-hero {
+    padding-block: var(--space-2xl);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+  }
+  .page-hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-primary) 50%,
+      transparent
+    );
+    opacity: 0.35;
+  }
+  .page-hero__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    margin: 0 0 var(--space-sm);
+  }
+  .page-hero__title {
+    font-family: var(--font-serif-jp);
+    font-size: clamp(1.85rem, 1.4rem + 1.8vw, 2.75rem);
+    margin: 0 0 var(--space-sm);
+    letter-spacing: 0.12em;
+    border-left: 4px solid var(--color-primary);
+    padding-left: var(--space-lg);
+  }
+  .page-hero__sub {
+    color: var(--color-text-secondary);
+    font-family: var(--font-serif-jp);
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+
+  .section {
+    padding-block: var(--space-2xl);
+  }
+
+  /* ========= Identity ========= */
+  .identity {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-xl);
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .identity__name {
+    font-family: var(--font-serif-jp);
+    font-size: clamp(1.6rem, 1.3rem + 1vw, 2rem);
+    letter-spacing: 0.1em;
+    margin: 0 0 0.2em;
+  }
+  .identity__name-sub {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    margin: 0 0 var(--space-md);
+  }
+  .identity__role {
+    color: var(--color-primary);
+    font-family: var(--font-serif-jp);
+    letter-spacing: 0.08em;
+    margin: 0 0 0.2em;
+  }
+  .identity__affiliation {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .bio {
+    margin-bottom: var(--space-2xl);
+    font-size: 1rem;
+    line-height: 1.9;
+  }
+
+  /* ========= Placeholder ========= */
+  .placeholder {
+    padding: var(--space-xl);
+    background: var(--color-surface);
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    text-align: center;
+  }
+  .placeholder__text {
+    font-family: var(--font-serif-jp);
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    color: var(--color-text);
+    margin: 0 0 var(--space-sm);
+  }
+  .placeholder__hint {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* ========= Block heading ========= */
+  .block {
+    margin-bottom: var(--space-2xl);
+  }
+  .block__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    margin: 0 0 var(--space-lg);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
+  }
+  .block__title-main {
+    font-family: var(--font-serif-jp);
+    font-size: 1.25rem;
+    letter-spacing: 0.12em;
+  }
+  .block__title-sub {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+
+  /* ========= Tags ========= */
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .tag {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    line-height: 1.2;
+  }
+  .tag__main {
+    font-family: var(--font-serif-jp);
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+  }
+  .tag__sub {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+  }
+
+  /* ========= Timeline (CV) ========= */
+  .timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 5.5rem;
+    top: 0.4em;
+    bottom: 0.4em;
+    width: 1px;
+    background: var(--color-border);
+  }
+  .timeline__item {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: var(--space-lg);
+    padding-block: var(--space-md);
+    position: relative;
+  }
+  .timeline__item::before {
+    content: "";
+    position: absolute;
+    left: calc(5.5rem - 4px);
+    top: 1.3em;
+    width: 9px;
+    height: 9px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--color-bg);
+  }
+  .timeline__year {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+    padding-top: 0.25em;
+  }
+  .timeline__body {
+    padding-left: var(--space-md);
+  }
+  .timeline__title {
+    font-family: var(--font-serif-jp);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.2em;
+  }
+  .timeline__org {
+    color: var(--color-primary);
+    font-size: 0.88rem;
+    margin: 0 0 0.4em;
+  }
+  .timeline__detail {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  /* ========= Publications ========= */
+  .pub-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .pub-item {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+    border-bottom: 1px dashed var(--color-border);
+  }
+  .pub-item:last-child {
+    border-bottom: none;
+  }
+  .pub-item__year {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    padding-top: 0.25em;
+  }
+  .pub-item__title {
+    font-family: var(--font-serif-jp);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.35em;
+  }
+  .pub-item__meta {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+  .pub-item__sep {
+    margin: 0 0.5em;
+  }
+  .pub-item__venue {
+    font-style: italic;
+  }
+
+  /* ========= Contact ========= */
+  .contact {
+    margin-bottom: var(--space-md);
+  }
+  .contact-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+  }
+  .contact-links a {
+    font-family: var(--font-serif-jp);
+    letter-spacing: 0.08em;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  @media (max-width: 640px) {
+    .timeline::before {
+      left: 3rem;
+    }
+    .timeline__item {
+      grid-template-columns: 3rem 1fr;
+      gap: var(--space-md);
+    }
+    .timeline__item::before {
+      left: calc(3rem - 4px);
+    }
+    .timeline__body {
+      padding-left: var(--space-sm);
+    }
+    .pub-item {
+      grid-template-columns: 1fr;
+      gap: var(--space-xs);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .page-hero__title {
+      padding-left: var(--space-md);
+    }
+    .contact-links {
+      gap: var(--space-md);
+    }
+  }
+</style>

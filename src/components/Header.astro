@@ -1,50 +1,82 @@
 ---
 import { site } from "../data/site";
+import { getLangFromUrl, useTranslations, pick, localizePath } from "../i18n/utils";
+import ThemeToggle from "./ThemeToggle.astro";
+import LangSwitcher from "./LangSwitcher.astro";
 
 interface Props {
   currentPath?: string;
 }
 const { currentPath = "/" } = Astro.props;
 
-// Normalize path for matching (ignore trailing slash)
-const normalize = (p: string) => {
-  const s = p.replace(/\/+$/, "");
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const otherLang = lang === "ja" ? "en" : "ja";
+
+const siteTitle = pick(site.title, lang);
+const siteTagline = pick(site.tagline, lang);
+
+// Sub-label (kicker) shows the OPPOSITE language for visual character
+const navKickers = {
+  "nav.home": { ja: "ホーム", en: "Home" },
+  "nav.about": { ja: "プロフィール", en: "About" },
+  "nav.notes": { ja: "ノート", en: "Notes" },
+} as const;
+
+// Normalize path for matching the active nav item (ignore /en prefix and trailing slash)
+const stripLocale = (p: string) => {
+  let s = p;
+  if (s === "/en" || s.startsWith("/en/")) s = s.slice(3) || "/";
+  s = s.replace(/\/+$/, "");
   return s === "" ? "/" : s;
 };
-const current = normalize(currentPath);
+const current = stripLocale(currentPath);
 ---
 
 <header class="site-header">
   <div class="container site-header__inner">
-    <a href="/" class="brand" aria-label={`${site.title} トップへ`}>
+    <a
+      href={localizePath("/", lang)}
+      class="brand"
+      aria-label={`${siteTitle} ${lang === "ja" ? "トップへ" : "Home"}`}
+    >
       <span class="brand__mark" aria-hidden="true">苦</span>
       <span class="brand__text">
-        <span class="brand__title">{site.title}</span>
-        <span class="brand__tagline">{site.tagline}</span>
+        <span class="brand__title">{siteTitle}</span>
+        <span class="brand__tagline">{siteTagline}</span>
       </span>
     </a>
 
-    <nav class="site-nav" aria-label="グローバルナビゲーション">
-      <ul class="site-nav__list">
-        {
-          site.nav.map((item) => {
-            const isCurrent = normalize(item.href) === current;
-            return (
-              <li class="site-nav__item">
-                <a
-                  href={item.href}
-                  class={`site-nav__link${isCurrent ? " is-current" : ""}`}
-                  aria-current={isCurrent ? "page" : undefined}
-                >
-                  <span class="site-nav__ja">{item.label}</span>
-                  <span class="site-nav__en">{item.labelEn}</span>
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </nav>
+    <div class="site-header__actions">
+      <nav class="site-nav" aria-label={lang === "ja" ? "グローバルナビゲーション" : "Global navigation"}>
+        <ul class="site-nav__list">
+          {
+            site.nav.map((item) => {
+              const isCurrent = stripLocale(item.href) === current;
+              return (
+                <li class="site-nav__item">
+                  <a
+                    href={localizePath(item.href, lang)}
+                    class={`site-nav__link${isCurrent ? " is-current" : ""}`}
+                    aria-current={isCurrent ? "page" : undefined}
+                  >
+                    <span class="site-nav__main">{t(item.key)}</span>
+                    <span class="site-nav__sub">
+                      {navKickers[item.key][otherLang]}
+                    </span>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+
+      <div class="site-header__tools">
+        <LangSwitcher />
+        <ThemeToggle />
+      </div>
+    </div>
   </div>
 </header>
 
@@ -129,11 +161,24 @@ const current = normalize(currentPath);
   .brand__tagline {
     font-size: 0.72rem;
     color: var(--color-text-secondary);
-    letter-spacing: 0.18em;
+    letter-spacing: 0.16em;
     margin-top: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+  }
+
+  .site-header__tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
   }
 
   .site-nav__list {
@@ -157,7 +202,7 @@ const current = normalize(currentPath);
     letter-spacing: 0.12em;
     border-bottom: 1px solid transparent;
     line-height: 1.2;
-    min-height: 44px; /* touch target */
+    min-height: 44px;
     justify-content: center;
   }
 
@@ -172,37 +217,48 @@ const current = normalize(currentPath);
     border-bottom-color: var(--color-primary);
   }
 
-  .site-nav__en {
+  .site-nav__sub {
     font-family: var(--font-mono);
     font-size: 0.62rem;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--color-text-secondary);
   }
 
-  .site-nav__link.is-current .site-nav__en {
+  .site-nav__link.is-current .site-nav__sub {
     color: var(--color-primary);
   }
 
   /* ---------- Tablet ---------- */
-  @media (max-width: 900px) {
+  @media (max-width: 960px) {
     .site-header__inner {
       gap: var(--space-md);
     }
     .site-nav__list {
       gap: var(--space-md);
     }
+    .site-header__actions {
+      gap: var(--space-md);
+    }
   }
 
   /* ---------- Mobile ---------- */
-  @media (max-width: 640px) {
+  @media (max-width: 720px) {
     .site-header__inner {
       flex-direction: column;
       align-items: stretch;
       gap: var(--space-md);
       padding-block: var(--space-md);
     }
-
+    .site-header__actions {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: var(--space-md);
+      padding-top: var(--space-sm);
+      border-top: 1px dashed var(--color-border);
+    }
     .brand {
       gap: var(--space-sm);
     }
@@ -217,12 +273,8 @@ const current = normalize(currentPath);
     .brand__tagline {
       font-size: 0.66rem;
     }
-
     .site-nav__list {
       gap: var(--space-sm);
-      justify-content: flex-start;
-      border-top: 1px dashed var(--color-border);
-      padding-top: var(--space-sm);
     }
     .site-nav__link {
       padding-inline: var(--space-sm);
@@ -230,12 +282,15 @@ const current = normalize(currentPath);
     }
   }
 
-  @media (max-width: 380px) {
+  @media (max-width: 480px) {
     .brand__tagline {
       display: none;
     }
     .site-nav__list {
       gap: var(--space-xs);
+    }
+    .site-nav__sub {
+      display: none;
     }
   }
 </style>
