@@ -4,7 +4,9 @@
    ========================================================= */
 
 :root {
-  /* ---------- Color Palette: 藍と墨 (indigo & ink) ---------- */
+  color-scheme: light dark;
+
+  /* ---------- Light Theme: 藍と墨 (indigo & ink) ---------- */
   /* Background — 白藍 (shiroai / very pale cool) */
   --color-bg: #f3f5f9;
   /* Surface — 素白 (suhaku) */
@@ -37,6 +39,12 @@
   --color-warning: #b7791f;
   --color-success: #2f5540; /* 常磐 tokiwa */
 
+  /* Elevation: light */
+  --shadow-1-rgb: 13, 21, 36;
+  --texture-light: rgba(255, 255, 255, 0.65);
+  --texture-line-1: rgba(27, 58, 107, 0.012);
+  --texture-line-2: rgba(13, 21, 36, 0.008);
+
   /* ---------- Typography ---------- */
   --font-serif-jp:
     "Shippori Mincho", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho",
@@ -63,9 +71,9 @@
   --container-pad: clamp(1rem, 4vw, 2.5rem);
 
   /* ---------- Elevation ---------- */
-  --shadow-1: 0 1px 2px rgba(13, 21, 36, 0.06);
-  --shadow-2: 0 4px 12px rgba(13, 21, 36, 0.08);
-  --shadow-3: 0 12px 32px rgba(13, 21, 36, 0.14);
+  --shadow-1: 0 1px 2px rgba(var(--shadow-1-rgb), 0.06);
+  --shadow-2: 0 4px 12px rgba(var(--shadow-1-rgb), 0.08);
+  --shadow-3: 0 12px 32px rgba(var(--shadow-1-rgb), 0.14);
 
   /* ---------- Radius — 控えめ ---------- */
   --radius-sm: 2px;
@@ -76,6 +84,58 @@
   --ease: cubic-bezier(0.2, 0.0, 0.0, 1.0);
   --dur-fast: 150ms;
   --dur-base: 240ms;
+}
+
+/* =========================================================
+   Dark Theme — 墨夜 (sumiyo / inked night)
+   Applied when [data-theme="dark"] is set on <html>.
+   The paint-safe init script in BaseLayout assigns this
+   attribute before first paint, respecting localStorage
+   and falling back to prefers-color-scheme.
+   ========================================================= */
+[data-theme="dark"] {
+  /* Background — 漆黒 (shikkoku), indigo-tinted ink */
+  --color-bg: #0b1220;
+  /* Surface — 夜藍 (yoai) */
+  --color-surface: #141d32;
+  /* Surface alt — 濃紺 (nōkon) */
+  --color-surface-alt: #1c2740;
+
+  /* Text — 月白 (geppaku / pale moonlight) */
+  --color-text: #e8edf5;
+  /* Secondary — 薄鈍 (usunibi) lifted for dark bg */
+  --color-text-secondary: #9aa5b8;
+  /* Disabled */
+  --color-text-disabled: #5b6476;
+
+  /* Primary — 淡藍 (awaai / pale indigo) for contrast on dark */
+  --color-primary: #7ea5d9;
+  --color-primary-dark: #a2bfe5;
+
+  /* Accent — 月白 (ink shifted to light) */
+  --color-accent: #e8edf5;
+  /* Soft accent — 浅葱 lifted */
+  --color-accent-soft: #7ea0b8;
+
+  /* Borders & dividers */
+  --color-border: #27324a;
+  --color-border-strong: #3d4a66;
+
+  /* Semantic */
+  --color-danger: #d76b6b;
+  --color-warning: #d9a84b;
+  --color-success: #80b89a;
+
+  /* Elevation — deeper shadows */
+  --shadow-1-rgb: 0, 0, 0;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-3: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+  /* Paper texture: cool indigo overlays on deep ink */
+  --texture-light: rgba(27, 58, 107, 0.18);
+  --texture-line-1: rgba(126, 165, 217, 0.02);
+  --texture-line-2: rgba(232, 237, 245, 0.012);
 }
 
 /* ---------- Reset ---------- */
@@ -111,24 +171,26 @@ body {
   background-image:
     radial-gradient(
       ellipse at top,
-      rgba(255, 255, 255, 0.65) 0%,
+      var(--texture-light) 0%,
       transparent 60%
     ),
     repeating-linear-gradient(
       45deg,
-      rgba(27, 58, 107, 0.012) 0px,
-      rgba(27, 58, 107, 0.012) 1px,
+      var(--texture-line-1) 0px,
+      var(--texture-line-1) 1px,
       transparent 1px,
       transparent 6px
     ),
     repeating-linear-gradient(
       -45deg,
-      rgba(13, 21, 36, 0.008) 0px,
-      rgba(13, 21, 36, 0.008) 1px,
+      var(--texture-line-2) 0px,
+      var(--texture-line-2) 1px,
       transparent 1px,
       transparent 8px
     );
   background-attachment: fixed;
+  transition: background-color var(--dur-base) var(--ease),
+    color var(--dur-base) var(--ease);
 }
 
 img,
@@ -172,7 +234,7 @@ p {
 a {
   color: var(--color-primary);
   text-decoration: none;
-  border-bottom: 1px solid rgba(27, 58, 107, 0.25);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
   transition:
     color var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease);
