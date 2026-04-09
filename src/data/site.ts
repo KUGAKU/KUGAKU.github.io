@@ -11,13 +11,18 @@ export interface NavItem {
   key: "nav.home" | "nav.about" | "nav.notes";
 }
 
+export interface RoleList {
+  ja: string[];
+  en: string[];
+}
+
 export interface Site {
   title: L10n;
   tagline: L10n;
   description: L10n;
   author: {
     name: L10n;
-    role: L10n;
+    roles: RoleList;
     affiliation: L10n;
     email: string;
     location: L10n;
@@ -37,20 +42,25 @@ export const site: Site = {
     ja: "苦学 Lab",
     en: "Kugaku Lab",
   },
+  // タグラインはヘッダー/フッターの小さいサブタイトル。空にすると非表示。
   tagline: {
-    ja: "Kugaku Lab — 研究と思索の記録",
-    en: "Kugaku Lab — Notes on research & thought",
+    ja: "",
+    en: "",
   },
   description: {
-    ja: "苦学 Lab — 研究者のポートフォリオサイト。プロフィール、研究関心、そしてnoteに綴る記録をまとめています。",
-    en: "Kugaku Lab — A researcher's portfolio: profile, interests, and notes published on note.",
+    ja: "苦学 Lab — エンジニア / コンサルタント / 大学院生のポートフォリオ。",
+    en: "Kugaku Lab — Portfolio of an engineer, consultant, and graduate student.",
   },
   author: {
     name: {
       ja: "苦学",
       en: "Kugaku",
     },
-    role: { ja: "", en: "" },
+    // 肩書き: 表示順に並べる
+    roles: {
+      ja: ["エンジニア", "コンサルタント", "大学院生 (博士前期課程)"],
+      en: ["Engineer", "Consultant", "Graduate Student (Master's)"],
+    },
     affiliation: { ja: "", en: "" },
     email: "",
     location: { ja: "", en: "" },

@@ -8,13 +8,14 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const authorName = pick(site.author.name, lang);
-const authorRole = pick(site.author.role, lang);
 const authorAffiliation = pick(site.author.affiliation, lang);
+const roles = site.author.roles[lang];
 // Always show the romanized name as a sub-label
 const nameSub = lang === "ja" ? "Kugaku" : "苦学";
 
 const bio = pick(profile.bio, lang);
 const hasBio = bio.length > 0;
+const hasRoles = roles.length > 0;
 const hasInterests = profile.interests.length > 0;
 const hasCV = profile.cv.length > 0;
 const hasPublications = profile.publications.length > 0;
@@ -26,18 +27,19 @@ const hasContact =
   !!site.social.scholar ||
   !!site.social.orcid;
 const hasAnyProfileInfo =
-  hasBio || hasInterests || hasCV || hasPublications || hasContact;
+  hasBio ||
+  hasRoles ||
+  hasInterests ||
+  hasCV ||
+  hasPublications ||
+  hasContact;
 ---
 
-<BaseLayout
-  title={t("about.title")}
-  description={`${authorName} — ${t("about.sub")}`}
->
+<BaseLayout title={t("about.title")} description={authorName}>
   <section class="page-hero">
     <div class="container">
       <p class="page-hero__eyebrow">{t("about.eyebrow")}</p>
       <h1 class="page-hero__title">{t("about.title")}</h1>
-      <p class="page-hero__sub">{t("about.sub")}</p>
     </div>
   </section>
 
@@ -47,10 +49,20 @@ const hasAnyProfileInfo =
       <div class="identity">
         <h2 class="identity__name">{authorName}</h2>
         <p class="identity__name-sub">{nameSub}</p>
-        {authorRole && <p class="identity__role">{authorRole}</p>}
-        {authorAffiliation && (
-          <p class="identity__affiliation">{authorAffiliation}</p>
-        )}
+        {
+          hasRoles && (
+            <ul class="identity__roles">
+              {roles.map((role) => (
+                <li class="identity__role">{role}</li>
+              ))}
+            </ul>
+          )
+        }
+        {
+          authorAffiliation && (
+            <p class="identity__affiliation">{authorAffiliation}</p>
+          )
+        }
       </div>
 
       <!-- ===== Bio ===== -->
@@ -298,11 +310,28 @@ const hasAnyProfileInfo =
     text-transform: uppercase;
     margin: 0 0 var(--space-md);
   }
-  .identity__role {
-    color: var(--color-primary);
+  .identity__roles {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-sm);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em 0;
     font-family: var(--font-serif-jp);
     letter-spacing: 0.08em;
-    margin: 0 0 0.2em;
+  }
+  .identity__role {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .identity__role + .identity__role::before {
+    content: "/";
+    color: var(--color-border-strong);
+    font-weight: 400;
+    padding: 0 0.7em;
   }
   .identity__affiliation {
     color: var(--color-text-secondary);
