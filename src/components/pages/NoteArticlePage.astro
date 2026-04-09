@@ -1,0 +1,262 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getLangFromUrl, useTranslations, localizePath } from "../../i18n/utils";
+
+interface Props {
+  entry: CollectionEntry<"notes">;
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const backHref = localizePath("/notes/", lang);
+const backLabel = lang === "ja" ? "← ノート一覧に戻る" : "← Back to all notes";
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.excerpt}>
+  <article class="note-article">
+    <div class="container container--narrow">
+      <!-- Back link (top) -->
+      <nav class="note-article__back" aria-label={backLabel}>
+        <a href={backHref}>{backLabel}</a>
+      </nav>
+
+      <!-- Article header -->
+      <header class="note-article__head">
+        <div class="note-article__meta">
+          <time class="note-article__date" datetime={entry.data.date}>
+            {entry.data.date}
+          </time>
+        </div>
+        <h1 class="note-article__title">{entry.data.title}</h1>
+        {
+          entry.data.excerpt && (
+            <p class="note-article__excerpt">{entry.data.excerpt}</p>
+          )
+        }
+        {
+          entry.data.tags.length > 0 && (
+            <ul class="note-article__tags">
+              {entry.data.tags.map((tag) => (
+                <li class="note-article__tag">#{tag}</li>
+              ))}
+            </ul>
+          )
+        }
+      </header>
+
+      <!-- Markdown body -->
+      <div class="prose">
+        <Content />
+      </div>
+
+      <!-- Back link (bottom) -->
+      <nav class="note-article__back note-article__back--bottom">
+        <a href={backHref}>{backLabel}</a>
+      </nav>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .note-article {
+    padding-block: var(--space-2xl);
+  }
+
+  /* ========= Back link ========= */
+  .note-article__back {
+    font-family: var(--font-serif-jp);
+    font-size: 0.88rem;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-xl);
+  }
+  .note-article__back a {
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid transparent;
+  }
+  .note-article__back a:hover {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+  .note-article__back--bottom {
+    margin-top: var(--space-2xl);
+    margin-bottom: 0;
+    padding-top: var(--space-xl);
+    border-top: 1px dashed var(--color-border);
+  }
+
+  /* ========= Article header ========= */
+  .note-article__head {
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .note-article__meta {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-md);
+  }
+
+  .note-article__title {
+    font-family: var(--font-serif-jp);
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    margin: 0 0 var(--space-md);
+    border-left: 4px solid var(--color-primary);
+    padding-left: var(--space-lg);
+  }
+
+  .note-article__excerpt {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.85;
+    margin: 0 0 var(--space-lg);
+    padding-left: calc(4px + var(--space-lg));
+  }
+
+  .note-article__tags {
+    list-style: none;
+    padding: 0 0 0 calc(4px + var(--space-lg));
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  .note-article__tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--color-accent-soft);
+    background: var(--color-surface-alt);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* ========= Prose (markdown body) ========= */
+  .prose {
+    font-size: 1rem;
+    line-height: 1.95;
+    color: var(--color-text);
+  }
+
+  .prose :global(h2) {
+    font-family: var(--font-serif-jp);
+    font-size: clamp(1.25rem, 1rem + 0.8vw, 1.55rem);
+    letter-spacing: 0.08em;
+    margin: var(--space-2xl) 0 var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .prose :global(h3) {
+    font-family: var(--font-serif-jp);
+    font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.2rem);
+    letter-spacing: 0.06em;
+    margin: var(--space-xl) 0 var(--space-md);
+    color: var(--color-primary);
+  }
+
+  .prose :global(p) {
+    margin: 0 0 1.2em;
+  }
+
+  .prose :global(strong) {
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .prose :global(em) {
+    font-style: italic;
+  }
+
+  .prose :global(a) {
+    color: var(--color-primary);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-primary) 35%, transparent);
+  }
+  .prose :global(a:hover) {
+    color: var(--color-primary-dark);
+    border-bottom-color: var(--color-primary-dark);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.3em;
+    padding-left: 1.6em;
+  }
+  .prose :global(ol) {
+    padding-left: 1.9em;
+  }
+  .prose :global(li) {
+    margin-bottom: 0.4em;
+  }
+  .prose :global(li > p) {
+    margin: 0.2em 0;
+  }
+
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--color-surface-alt);
+    padding: 0.12em 0.4em;
+    border-radius: var(--radius-sm);
+    color: var(--color-primary);
+  }
+
+  .prose :global(pre) {
+    font-family: var(--font-mono);
+    background: var(--color-surface-alt);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    margin: var(--space-md) 0 1.3em;
+    border: 1px solid var(--color-border);
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+  .prose :global(pre code) {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .prose :global(blockquote) {
+    margin: var(--space-md) 0 1.3em;
+    padding: 0.4em 0 0.4em var(--space-lg);
+    border-left: 3px solid var(--color-primary);
+    color: var(--color-text-secondary);
+    font-style: italic;
+  }
+  .prose :global(blockquote > p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .prose :global(hr) {
+    border: none;
+    height: 1px;
+    background: var(--color-border);
+    margin: var(--space-xl) 0;
+  }
+
+  @media (max-width: 640px) {
+    .note-article__title {
+      padding-left: var(--space-md);
+    }
+    .note-article__excerpt,
+    .note-article__tags {
+      padding-left: calc(4px + var(--space-md));
+    }
+  }
+</style>

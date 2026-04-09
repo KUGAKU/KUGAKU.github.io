@@ -1,25 +1,38 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { notes } from "../../data/notes";
-import { getLangFromUrl, useTranslations, pick } from "../../i18n/utils";
+import { getCollection } from "astro:content";
+import { getLangFromUrl, useTranslations, localizePath } from "../../i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
+// Pull notes for the current language from the content collection.
+// Folder convention: src/content/notes/<lang>/<slug>.md
+const langPrefix = `${lang}/`;
+const allNotes = await getCollection("notes", ({ id, data }) => {
+  return id.startsWith(langPrefix) && !data.draft;
+});
+
 // Sort by date desc
-const sortedNotes = [...notes].sort((a, b) =>
-  a.date < b.date ? 1 : a.date > b.date ? -1 : 0
+const sortedNotes = allNotes.sort((a, b) =>
+  a.data.date < b.data.date ? 1 : a.data.date > b.data.date ? -1 : 0
 );
 
+// Build display entries (strip "<lang>/" from slug for URL)
+const entries = sortedNotes.map((n) => ({
+  slug: n.slug.replace(new RegExp(`^${lang}/`), ""),
+  title: n.data.title,
+  date: n.data.date,
+  excerpt: n.data.excerpt,
+  tags: n.data.tags,
+}));
+
 // Group by year
-const grouped = sortedNotes.reduce<Record<string, typeof sortedNotes>>(
-  (acc, n) => {
-    const year = n.date.slice(0, 4);
-    (acc[year] ??= []).push(n);
-    return acc;
-  },
-  {}
-);
+const grouped = entries.reduce<Record<string, typeof entries>>((acc, n) => {
+  const year = n.date.slice(0, 4);
+  (acc[year] ??= []).push(n);
+  return acc;
+}, {});
 const years = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
 ---
 
@@ -49,28 +62,24 @@ const years = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
             </header>
             <ul class="note-list">
               {grouped[year].map((n) => {
-                const title = pick(n.title, lang);
-                const excerpt = pick(n.excerpt, lang);
+                const href = localizePath(`/notes/${n.slug}/`, lang);
                 return (
                   <li class="note-card">
                     <a
-                      href={n.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={href}
                       class="note-card__link"
-                      aria-label={`${t("notes.card.ariaOpen")}${title}${t("notes.card.ariaClose")}`}
+                      aria-label={`${t("notes.card.ariaOpen")}${n.title}${t("notes.card.ariaClose")}`}
                     >
                       <div class="note-card__head">
                         <time class="note-card__date" datetime={n.date}>
                           {n.date}
                         </time>
-                        <span class="note-card__source">note</span>
                       </div>
-                      <h3 class="note-card__title">{title}</h3>
-                      {excerpt && (
-                        <p class="note-card__excerpt">{excerpt}</p>
+                      <h3 class="note-card__title">{n.title}</h3>
+                      {n.excerpt && (
+                        <p class="note-card__excerpt">{n.excerpt}</p>
                       )}
-                      {n.tags && n.tags.length > 0 && (
+                      {n.tags.length > 0 && (
                         <ul class="note-card__tags">
                           {n.tags.map((tag) => (
                             <li class="note-card__tag">#{tag}</li>
@@ -90,12 +99,12 @@ const years = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
       }
 
       {
-        sortedNotes.length === 0 && (
+        entries.length === 0 && (
           <div class="empty">
             <p class="empty__text">{t("notes.empty.text")}</p>
             <p class="empty__hint">
               {t("notes.empty.hintPre")}
-              <code>src/data/notes.ts</code>
+              <code>src/content/notes/{lang}/</code>
               {t("notes.empty.hintPost")}
             </p>
           </div>
@@ -257,18 +266,6 @@ const years = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
     font-size: 0.78rem;
     letter-spacing: 0.1em;
     color: var(--color-text-secondary);
-  }
-
-  .note-card__source {
-    display: inline-block;
-    font-family: var(--font-serif-jp);
-    font-size: 0.68rem;
-    letter-spacing: 0.15em;
-    color: var(--color-primary);
-    padding: 2px 8px;
-    border: 1px solid var(--color-primary);
-    border-radius: var(--radius-sm);
-    text-transform: uppercase;
   }
 
   .note-card__title {

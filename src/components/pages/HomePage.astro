@@ -1,15 +1,29 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PixelGrid from "../PixelGrid.astro";
+import { getCollection } from "astro:content";
 import { site } from "../../data/site";
 import { profile } from "../../data/profile";
-import { notes } from "../../data/notes";
 import { getLangFromUrl, useTranslations, pick, localizePath } from "../../i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const latestNotes = notes.slice(0, 3);
+// Pull latest notes for the current language from the content collection.
+const langPrefix = `${lang}/`;
+const allNotes = await getCollection("notes", ({ id, data }) => {
+  return id.startsWith(langPrefix) && !data.draft;
+});
+const latestNotes = allNotes
+  .sort((a, b) => (a.data.date < b.data.date ? 1 : a.data.date > b.data.date ? -1 : 0))
+  .slice(0, 3)
+  .map((n) => ({
+    slug: n.slug.replace(new RegExp(`^${lang}/`), ""),
+    title: n.data.title,
+    date: n.data.date,
+    excerpt: n.data.excerpt,
+  }));
+
 const bio = pick(profile.bio, lang);
 const hasBio = bio.length > 0;
 const hasInterests = profile.interests.length > 0;
@@ -108,19 +122,17 @@ const siteTitle = lang === "ja" ? "苦学 Lab" : "Kugaku Lab";
             {latestNotes.map((n) => (
               <li class="note-item">
                 <a
-                  href={n.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={localizePath(`/notes/${n.slug}/`, lang)}
                   class="note-item__link"
                 >
                   <time class="note-item__date">{n.date}</time>
-                  <span class="note-item__title">{pick(n.title, lang)}</span>
+                  <span class="note-item__title">{n.title}</span>
                   <span class="note-item__arrow" aria-hidden="true">
                     →
                   </span>
                 </a>
-                {pick(n.excerpt, lang) && (
-                  <p class="note-item__excerpt">{pick(n.excerpt, lang)}</p>
+                {n.excerpt && (
+                  <p class="note-item__excerpt">{n.excerpt}</p>
                 )}
               </li>
             ))}
