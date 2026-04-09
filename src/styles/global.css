@@ -1,49 +1,50 @@
 /* =========================================================
-   和風デザインシステム — 苦学 Lab
-   Japanese-inspired design system — blue & black edition
+   苦学 Lab design system
+   Neutral (墨) + Emerald — palette borrowed from Zaggonaut
+   (Tailwind neutral-100..900 + emerald-300..800)
    ========================================================= */
 
 :root {
   color-scheme: light dark;
 
-  /* ---------- Light Theme: 藍と墨 (indigo & ink) ---------- */
-  /* Background — 白藍 (shiroai / very pale cool) */
-  --color-bg: #f3f5f9;
-  /* Surface — 素白 (suhaku) */
+  /* ---------- Light Theme: neutral + emerald ---------- */
+  /* Background — neutral-100 */
+  --color-bg: #f5f5f5;
+  /* Surface — white */
   --color-surface: #ffffff;
-  /* Surface alt — 白鼠 (shironezu) */
-  --color-surface-alt: #e7ebf2;
+  /* Surface alt — neutral-200 */
+  --color-surface-alt: #e5e5e5;
 
-  /* Text — 墨 (sumi / ink), slightly blue-tinted */
-  --color-text: #0d1524;
-  /* Secondary text — 鈍色 (nibiiro) with cool cast */
-  --color-text-secondary: #4a5568;
-  /* Disabled — 薄墨 (usuzumi) */
-  --color-text-disabled: #94a1b3;
+  /* Text — neutral-900 (墨, warm near-black) */
+  --color-text: #171717;
+  /* Secondary text — neutral-600 */
+  --color-text-secondary: #525252;
+  /* Disabled — neutral-400 */
+  --color-text-disabled: #a3a3a3;
 
-  /* Primary — 藍 (ai / indigo) */
-  --color-primary: #1b3a6b;
-  --color-primary-dark: #0f2347;
+  /* Primary — emerald-600 */
+  --color-primary: #059669;
+  --color-primary-dark: #065f46; /* emerald-800 */
 
-  /* Accent — 墨 (sumi / ink black) */
-  --color-accent: #0d1524;
-  /* Soft accent — 浅葱 (asagi / pale blue) */
-  --color-accent-soft: #4f7c8f;
+  /* Accent — neutral-900 (for secondary "ink" accents) */
+  --color-accent: #171717;
+  /* Soft accent — emerald-400 */
+  --color-accent-soft: #34d399;
 
   /* Borders & dividers */
-  --color-border: #d5dae3;
-  --color-border-strong: #9fa8b8;
+  --color-border: #d4d4d4; /* neutral-300 */
+  --color-border-strong: #a3a3a3; /* neutral-400 */
 
   /* Semantic */
-  --color-danger: #9b2c2c;
-  --color-warning: #b7791f;
-  --color-success: #2f5540; /* 常磐 tokiwa */
+  --color-danger: #b91c1c; /* red-700 */
+  --color-warning: #b45309; /* amber-700 */
+  --color-success: #059669; /* emerald-600 */
 
   /* Elevation: light */
-  --shadow-1-rgb: 13, 21, 36;
-  --texture-light: rgba(255, 255, 255, 0.65);
-  --texture-line-1: rgba(27, 58, 107, 0.012);
-  --texture-line-2: rgba(13, 21, 36, 0.008);
+  --shadow-1-rgb: 23, 23, 23;
+  --texture-light: rgba(255, 255, 255, 0.7);
+  --texture-line-1: rgba(5, 150, 105, 0.010); /* emerald-600 faint */
+  --texture-line-2: rgba(23, 23, 23, 0.008); /* neutral-900 faint */
 
   /* ---------- Typography ---------- */
   --font-serif-jp:
@@ -87,44 +88,44 @@
 }
 
 /* =========================================================
-   Dark Theme — 墨夜 (sumiyo / inked night)
+   Dark Theme — neutral-900 base + brighter emerald accent
    Applied when [data-theme="dark"] is set on <html>.
    The paint-safe init script in BaseLayout assigns this
    attribute before first paint, respecting localStorage
    and falling back to prefers-color-scheme.
    ========================================================= */
 [data-theme="dark"] {
-  /* Background — 漆黒 (shikkoku), indigo-tinted ink */
-  --color-bg: #0b1220;
-  /* Surface — 夜藍 (yoai) */
-  --color-surface: #141d32;
-  /* Surface alt — 濃紺 (nōkon) */
-  --color-surface-alt: #1c2740;
+  /* Background — neutral-900 */
+  --color-bg: #171717;
+  /* Surface — neutral-800 */
+  --color-surface: #262626;
+  /* Surface alt — neutral-700 */
+  --color-surface-alt: #404040;
 
-  /* Text — 月白 (geppaku / pale moonlight) */
-  --color-text: #e8edf5;
-  /* Secondary — 薄鈍 (usunibi) lifted for dark bg */
-  --color-text-secondary: #9aa5b8;
-  /* Disabled */
-  --color-text-disabled: #5b6476;
+  /* Text — neutral-100 */
+  --color-text: #f5f5f5;
+  /* Secondary — neutral-400 */
+  --color-text-secondary: #a3a3a3;
+  /* Disabled — neutral-600 */
+  --color-text-disabled: #525252;
 
-  /* Primary — 淡藍 (awaai / pale indigo) for contrast on dark */
-  --color-primary: #7ea5d9;
-  --color-primary-dark: #a2bfe5;
+  /* Primary — emerald-400 (brighter for contrast on dark) */
+  --color-primary: #34d399;
+  --color-primary-dark: #6ee7b7; /* emerald-300 */
 
-  /* Accent — 月白 (ink shifted to light) */
-  --color-accent: #e8edf5;
-  /* Soft accent — 浅葱 lifted */
-  --color-accent-soft: #7ea0b8;
+  /* Accent — neutral-100 (bright ink shifted to light) */
+  --color-accent: #f5f5f5;
+  /* Soft accent — emerald-400 */
+  --color-accent-soft: #34d399;
 
   /* Borders & dividers */
-  --color-border: #27324a;
-  --color-border-strong: #3d4a66;
+  --color-border: #404040; /* neutral-700 */
+  --color-border-strong: #525252; /* neutral-600 */
 
   /* Semantic */
-  --color-danger: #d76b6b;
-  --color-warning: #d9a84b;
-  --color-success: #80b89a;
+  --color-danger: #f87171; /* red-400 */
+  --color-warning: #fbbf24; /* amber-400 */
+  --color-success: #34d399; /* emerald-400 */
 
   /* Elevation — deeper shadows */
   --shadow-1-rgb: 0, 0, 0;
@@ -132,10 +133,10 @@
   --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.5);
   --shadow-3: 0 12px 32px rgba(0, 0, 0, 0.6);
 
-  /* Paper texture: cool indigo overlays on deep ink */
-  --texture-light: rgba(27, 58, 107, 0.18);
-  --texture-line-1: rgba(126, 165, 217, 0.02);
-  --texture-line-2: rgba(232, 237, 245, 0.012);
+  /* Paper texture: emerald + neutral overlays on neutral-900 */
+  --texture-light: rgba(5, 150, 105, 0.10); /* emerald faint glow top */
+  --texture-line-1: rgba(52, 211, 153, 0.018); /* emerald-400 faint */
+  --texture-line-2: rgba(245, 245, 245, 0.010); /* neutral-100 faint */
 }
 
 /* ---------- Reset ---------- */
