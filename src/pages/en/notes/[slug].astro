@@ -1,0 +1,21 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import NoteArticlePage from "../../../components/pages/NoteArticlePage.astro";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("notes", ({ id, data }) => {
+    return id.startsWith("en/") && !data.draft;
+  });
+  return entries.map((entry) => ({
+    params: { slug: entry.slug.replace(/^en\//, "") },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<"notes">;
+}
+const { entry } = Astro.props;
+---
+
+<NoteArticlePage entry={entry} />

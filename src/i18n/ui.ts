@@ -52,8 +52,8 @@ export const ui = {
 
     "notes.eyebrow": "Notes",
     "notes.title": "ノート",
-    "notes.sub": "note の投稿一覧",
-    "notes.card.cta": "記事を読む →",
+    "notes.sub": "書いたものの一覧",
+    "notes.card.cta": "続きを読む →",
     "notes.card.ariaOpen": "note の記事「",
     "notes.card.ariaClose": "」を開く",
     "notes.count.one": " 件",
@@ -105,8 +105,8 @@ export const ui = {
 
     "notes.eyebrow": "Notes",
     "notes.title": "Notes",
-    "notes.sub": "Posts on note",
-    "notes.card.cta": "Open on note →",
+    "notes.sub": "Things I've written",
+    "notes.card.cta": "Read more →",
     "notes.card.ariaOpen": 'Open note article "',
     "notes.card.ariaClose": '"',
     "notes.count.one": " post",
