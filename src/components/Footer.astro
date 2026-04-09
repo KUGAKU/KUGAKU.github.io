@@ -15,7 +15,7 @@ const authorName = pick(site.author.name, lang);
   <div class="container site-footer__inner">
     <div class="site-footer__col">
       <p class="site-footer__title">{siteTitle}</p>
-      <p class="site-footer__tagline">{siteTagline}</p>
+      {siteTagline && <p class="site-footer__tagline">{siteTagline}</p>}
     </div>
 
     <nav class="site-footer__links" aria-label={lang === "ja" ? "フッターリンク" : "Footer links"}>

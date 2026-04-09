@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { site } from "../../data/site";
 import { profile } from "../../data/profile";
 import { notes } from "../../data/notes";
 import { getLangFromUrl, useTranslations, pick, localizePath } from "../../i18n/utils";
@@ -8,12 +9,13 @@ const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const latestNotes = notes.slice(0, 3);
-const greeting = pick(profile.greeting, lang);
 const bio = pick(profile.bio, lang);
-const hasGreeting = greeting.length > 0;
 const hasBio = bio.length > 0;
 const hasInterests = profile.interests.length > 0;
 const hasNotes = latestNotes.length > 0;
+
+const roles = site.author.roles[lang];
+const siteTitle = lang === "ja" ? "苦学 Lab" : "Kugaku Lab";
 ---
 
 <BaseLayout>
@@ -21,23 +23,28 @@ const hasNotes = latestNotes.length > 0;
   <section class="hero">
     <div class="container hero__inner">
       <div class="hero__text">
-        <p class="hero__eyebrow" aria-hidden="true">{t("home.eyebrow")}</p>
         <h1 class="hero__title">
-          <span class="hero__title-main">
-            {lang === "ja" ? "苦学 Lab" : "Kugaku Lab"}
-          </span>
+          <span class="hero__title-main">{siteTitle}</span>
         </h1>
 
-        {hasGreeting && <p class="hero__greeting">{greeting}</p>}
-        {hasBio && <p class="hero__bio">{bio}</p>}
-
         {
-          !hasBio && !hasGreeting && (
-            <p class="hero__bio hero__bio--placeholder">
-              {t("home.bioPlaceholder")}
-            </p>
+          roles.length > 0 && (
+            <ul class="hero__roles" aria-label={t("about.roles.main")}>
+              {roles.map((role, i) => (
+                <>
+                  {i > 0 && (
+                    <li class="hero__roles-sep" aria-hidden="true">
+                      /
+                    </li>
+                  )}
+                  <li class="hero__roles-item">{role}</li>
+                </>
+              ))}
+            </ul>
           )
         }
+
+        {hasBio && <p class="hero__bio">{bio}</p>}
 
         <div class="hero__actions">
           <a href={localizePath("/about/", lang)} class="btn btn--primary">
@@ -166,15 +173,6 @@ const hasNotes = latestNotes.length > 0;
     position: relative;
   }
 
-  .hero__eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.28em;
-    color: var(--color-primary);
-    text-transform: uppercase;
-    margin: 0 0 var(--space-md);
-  }
-
   .hero__title {
     font-family: var(--font-serif-jp);
     font-size: clamp(2.25rem, 1.5rem + 3.2vw, 4.25rem);
@@ -190,23 +188,32 @@ const hasNotes = latestNotes.length > 0;
     padding-left: var(--space-lg);
   }
 
-  .hero__greeting {
+  /* Roles list: "Engineer / Consultant / 大学院生" */
+  .hero__roles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4em 0.7em;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-xl);
     font-family: var(--font-serif-jp);
-    font-size: 1.1rem;
-    letter-spacing: 0.1em;
+    font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1.1rem);
+    letter-spacing: 0.08em;
     color: var(--color-text);
-    margin: 0 0 var(--space-lg);
+  }
+  .hero__roles-item {
+    font-weight: 600;
+  }
+  .hero__roles-sep {
+    color: var(--color-border-strong);
+    font-weight: 400;
   }
 
   .hero__bio {
     max-width: 38em;
     margin: 0 0 var(--space-xl);
     color: var(--color-text);
-  }
-  .hero__bio--placeholder {
-    color: var(--color-text-secondary);
-    font-family: var(--font-serif-jp);
-    letter-spacing: 0.08em;
   }
 
   .hero__actions {

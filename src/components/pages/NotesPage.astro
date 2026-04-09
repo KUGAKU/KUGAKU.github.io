@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { notes } from "../../data/notes";
-import { site } from "../../data/site";
 import { getLangFromUrl, useTranslations, pick } from "../../i18n/utils";
 
 const lang = getLangFromUrl(Astro.url);
@@ -35,14 +34,6 @@ const years = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
 
   <section class="section">
     <div class="container container--narrow">
-      <p class="intro">
-        {t("notes.intro.pre")}<a
-          href={site.social.note || "https://note.com/"}
-          target="_blank"
-          rel="noopener noreferrer">note</a
-        >{t("notes.intro.post")}
-      </p>
-
       {
         years.map((year) => (
           <section class="year-group">
@@ -162,14 +153,6 @@ const years = Object.keys(grouped).sort((a, b) => (a < b ? 1 : -1));
 
   .section {
     padding-block: var(--space-2xl);
-  }
-
-  .intro {
-    font-size: 0.95rem;
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-2xl);
-    padding-bottom: var(--space-lg);
-    border-bottom: 1px dashed var(--color-border);
   }
 
   /* ========= Year group ========= */

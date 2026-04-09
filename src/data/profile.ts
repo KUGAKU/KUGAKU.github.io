@@ -1,7 +1,7 @@
 // プロフィールとCV情報
-// Edit this file to customize your profile / researcher info.
+// Edit this file to customize your profile.
 //
-// バイリンガル対応: bio / cv / interests の文字列は
+// バイリンガル対応: bio / cv / interests は
 // { ja: "...", en: "..." } の形式で書けます。
 // 片方だけでも OK (もう一方にフォールバックします)。
 // publications は一つの言語のみで書くことが多いため string のままです。
@@ -29,7 +29,6 @@ export interface Publication {
 }
 
 export interface Profile {
-  greeting: L10n;
   bio: L10n;
   interests: Interest[];
   cv: CVEntry[];
@@ -37,7 +36,6 @@ export interface Profile {
 }
 
 export const profile: Profile = {
-  greeting: { ja: "", en: "" },
   bio: { ja: "", en: "" },
   interests: [],
   cv: [],

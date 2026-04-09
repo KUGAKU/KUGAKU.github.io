@@ -43,7 +43,7 @@ const current = stripLocale(currentPath);
       <span class="brand__mark" aria-hidden="true">苦</span>
       <span class="brand__text">
         <span class="brand__title">{siteTitle}</span>
-        <span class="brand__tagline">{siteTagline}</span>
+        {siteTagline && <span class="brand__tagline">{siteTagline}</span>}
       </span>
     </a>
 
