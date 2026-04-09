@@ -1,0 +1,279 @@
+---
+// PixelGrid.astro
+// A subtle grid of square cells that occasionally light up and fade out.
+// Intended as a calm, geometric background: "置かれている" not "流れている".
+//
+// - Theme-aware: reads --color-primary from the current theme CSS vars,
+//   re-reads on [data-theme] mutation (light/dark toggle)
+// - Canvas-based for efficiency with many cells
+// - Pauses when off-screen (IntersectionObserver) or tab hidden
+// - prefers-reduced-motion: draws a static constellation, no animation
+// - Cleans up RAF, listeners, observers on pagehide
+---
+
+<canvas class="pixel-grid" data-pixel-grid aria-hidden="true"></canvas>
+
+<script is:inline>
+  (function () {
+    var canvases = document.querySelectorAll("[data-pixel-grid]");
+    if (!canvases.length) return;
+
+    canvases.forEach(function (canvas) {
+      if (canvas.dataset.bound === "1") return;
+      canvas.dataset.bound = "1";
+
+      var ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var width = 0;
+      var height = 0;
+      var cellSize = 26;
+      var cellPad = 3;
+      var cols = 0;
+      var rows = 0;
+      var cells = [];
+      var maxActive = 14;
+      var spawnInterval = 240; // ms between spawn attempts
+      var lastSpawn = 0;
+      var visible = true;
+      var running = true;
+      var rafId = 0;
+      var primaryRgb = "27, 58, 107";
+
+      function hexToRgb(raw) {
+        var hex = String(raw || "").trim().replace("#", "");
+        if (hex.length === 3) {
+          hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        if (hex.length !== 6) return null;
+        var n = parseInt(hex, 16);
+        if (isNaN(n)) return null;
+        return (
+          ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255)
+        );
+      }
+
+      function readThemeColors() {
+        var cs = getComputedStyle(document.documentElement);
+        var p = hexToRgb(cs.getPropertyValue("--color-primary"));
+        if (p) primaryRgb = p;
+      }
+
+      function resize() {
+        var rect = canvas.getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+        if (width <= 0 || height <= 0) return;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+        cols = Math.max(1, Math.floor(width / cellSize));
+        rows = Math.max(1, Math.floor(height / cellSize));
+
+        // Reset cell grid — center the grid in the canvas area
+        var offsetX = Math.floor((width - cols * cellSize) / 2);
+        var offsetY = Math.floor((height - rows * cellSize) / 2);
+        cells = new Array(cols * rows);
+        for (var r = 0; r < rows; r++) {
+          for (var c = 0; c < cols; c++) {
+            cells[r * cols + c] = {
+              x: offsetX + c * cellSize,
+              y: offsetY + r * cellSize,
+              active: false,
+              start: 0,
+              duration: 0,
+            };
+          }
+        }
+      }
+
+      function countActive() {
+        var n = 0;
+        for (var i = 0; i < cells.length; i++) {
+          if (cells[i].active) n++;
+        }
+        return n;
+      }
+
+      function spawn(time) {
+        if (countActive() >= maxActive) return;
+        // Random sampling to find an inactive cell
+        for (var tries = 0; tries < 40; tries++) {
+          var idx = Math.floor(Math.random() * cells.length);
+          var cell = cells[idx];
+          if (!cell.active) {
+            cell.active = true;
+            cell.start = time;
+            cell.duration = 2800 + Math.random() * 3200; // 2.8 – 6.0 s
+            return;
+          }
+        }
+      }
+
+      function draw(time) {
+        rafId = requestAnimationFrame(draw);
+        if (!running || !visible) return;
+
+        ctx.clearRect(0, 0, width, height);
+
+        var maxOpacity = 0.45;
+        var innerSize = cellSize - cellPad * 2;
+
+        for (var i = 0; i < cells.length; i++) {
+          var cell = cells[i];
+          if (!cell.active) continue;
+          var elapsed = time - cell.start;
+          if (elapsed >= cell.duration) {
+            cell.active = false;
+            continue;
+          }
+          // Opacity envelope: fade in 25%, hold, fade out last 35%
+          var t = elapsed / cell.duration;
+          var op;
+          if (t < 0.25) op = t / 0.25;
+          else if (t > 0.65) op = (1 - t) / 0.35;
+          else op = 1;
+          op *= maxOpacity;
+
+          ctx.fillStyle = "rgba(" + primaryRgb + ", " + op + ")";
+          ctx.fillRect(
+            cell.x + cellPad,
+            cell.y + cellPad,
+            innerSize,
+            innerSize
+          );
+        }
+
+        if (time - lastSpawn > spawnInterval) {
+          // Spawn 1–2 per interval on average
+          spawn(time);
+          if (Math.random() > 0.6) spawn(time);
+          lastSpawn = time;
+        }
+      }
+
+      function drawStatic() {
+        ctx.clearRect(0, 0, width, height);
+        var innerSize = cellSize - cellPad * 2;
+        var n = Math.min(22, Math.floor(cells.length * 0.06));
+        for (var i = 0; i < n; i++) {
+          var cell = cells[Math.floor(Math.random() * cells.length)];
+          var op = 0.08 + Math.random() * 0.28;
+          ctx.fillStyle = "rgba(" + primaryRgb + ", " + op + ")";
+          ctx.fillRect(
+            cell.x + cellPad,
+            cell.y + cellPad,
+            innerSize,
+            innerSize
+          );
+        }
+      }
+
+      // IntersectionObserver — pause when canvas scrolls off-screen
+      var io = null;
+      if ("IntersectionObserver" in window) {
+        io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            visible = e.isIntersecting;
+          });
+        });
+        io.observe(canvas);
+      }
+
+      // Theme mutation observer — re-read colors on light/dark toggle
+      var mo = new MutationObserver(function () {
+        readThemeColors();
+      });
+      mo.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
+
+      // Debounced resize
+      var resizeTimer = 0;
+      function onResize() {
+        clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(resize, 150);
+      }
+      window.addEventListener("resize", onResize);
+
+      // Pause on tab hidden
+      function onVisibility() {
+        if (document.hidden) {
+          running = false;
+        } else {
+          running = true;
+          lastSpawn = 0;
+        }
+      }
+      document.addEventListener("visibilitychange", onVisibility);
+
+      // Cleanup on pagehide
+      function cleanup() {
+        cancelAnimationFrame(rafId);
+        window.removeEventListener("resize", onResize);
+        document.removeEventListener("visibilitychange", onVisibility);
+        if (io) io.disconnect();
+        mo.disconnect();
+      }
+      window.addEventListener("pagehide", cleanup, { once: true });
+
+      // Init
+      readThemeColors();
+      resize();
+
+      var prefersReduced =
+        window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (prefersReduced) {
+        drawStatic();
+      } else {
+        rafId = requestAnimationFrame(draw);
+      }
+    });
+  })();
+</script>
+
+<style>
+  .pixel-grid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.95;
+
+    /* Preserve crisp pixel edges when the canvas is scaled */
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+
+    /* Soft radial mask — concentrate the grid toward the right side,
+       behind the seal, fading out near the edges. */
+    -webkit-mask-image: radial-gradient(
+      ellipse 85% 90% at 70% 50%,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.85) 50%,
+      rgba(0, 0, 0, 0) 95%
+    );
+    mask-image: radial-gradient(
+      ellipse 85% 90% at 70% 50%,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.85) 50%,
+      rgba(0, 0, 0, 0) 95%
+    );
+  }
+
+  [data-theme="dark"] .pixel-grid {
+    opacity: 0.85;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pixel-grid {
+      opacity: 0.4;
+    }
+  }
+</style>
