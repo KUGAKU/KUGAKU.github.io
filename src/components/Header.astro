@@ -17,7 +17,7 @@ const current = normalize(currentPath);
 <header class="site-header">
   <div class="container site-header__inner">
     <a href="/" class="brand" aria-label={`${site.title} トップへ`}>
-      <span class="brand__mark" aria-hidden="true">研</span>
+      <span class="brand__mark" aria-hidden="true">苦</span>
       <span class="brand__text">
         <span class="brand__title">{site.title}</span>
         <span class="brand__tagline">{site.tagline}</span>
@@ -55,7 +55,7 @@ const current = normalize(currentPath);
     position: relative;
   }
 
-  /* 朱線: subtle vermilion accent rule at the bottom */
+  /* 藍線: subtle indigo accent rule at the bottom */
   .site-header::after {
     content: "";
     position: absolute;
@@ -70,7 +70,7 @@ const current = normalize(currentPath);
       var(--color-primary) 88%,
       transparent 100%
     );
-    opacity: 0.35;
+    opacity: 0.4;
   }
 
   .site-header__inner {
@@ -79,6 +79,7 @@ const current = normalize(currentPath);
     justify-content: space-between;
     gap: var(--space-lg);
     padding-block: var(--space-lg);
+    flex-wrap: wrap;
   }
 
   .brand {
@@ -87,6 +88,7 @@ const current = normalize(currentPath);
     gap: var(--space-md);
     color: var(--color-text);
     border-bottom: none;
+    min-width: 0;
   }
   .brand:hover {
     color: var(--color-text);
@@ -113,6 +115,7 @@ const current = normalize(currentPath);
     display: flex;
     flex-direction: column;
     line-height: 1.2;
+    min-width: 0;
   }
 
   .brand__title {
@@ -120,13 +123,17 @@ const current = normalize(currentPath);
     font-size: 1.15rem;
     font-weight: 700;
     letter-spacing: 0.1em;
+    white-space: nowrap;
   }
 
   .brand__tagline {
     font-size: 0.72rem;
     color: var(--color-text-secondary);
-    letter-spacing: 0.2em;
+    letter-spacing: 0.18em;
     margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .site-nav__list {
@@ -135,6 +142,7 @@ const current = normalize(currentPath);
     margin: 0;
     padding: 0;
     list-style: none;
+    flex-wrap: wrap;
   }
 
   .site-nav__link {
@@ -149,6 +157,8 @@ const current = normalize(currentPath);
     letter-spacing: 0.12em;
     border-bottom: 1px solid transparent;
     line-height: 1.2;
+    min-height: 44px; /* touch target */
+    justify-content: center;
   }
 
   .site-nav__link:hover,
@@ -174,20 +184,58 @@ const current = normalize(currentPath);
     color: var(--color-primary);
   }
 
+  /* ---------- Tablet ---------- */
+  @media (max-width: 900px) {
+    .site-header__inner {
+      gap: var(--space-md);
+    }
+    .site-nav__list {
+      gap: var(--space-md);
+    }
+  }
+
+  /* ---------- Mobile ---------- */
   @media (max-width: 640px) {
     .site-header__inner {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       gap: var(--space-md);
       padding-block: var(--space-md);
     }
 
-    .site-nav__list {
-      gap: var(--space-md);
+    .brand {
+      gap: var(--space-sm);
+    }
+    .brand__mark {
+      width: 2.25rem;
+      height: 2.25rem;
+      font-size: 1.2rem;
+    }
+    .brand__title {
+      font-size: 1.05rem;
+    }
+    .brand__tagline {
+      font-size: 0.66rem;
     }
 
+    .site-nav__list {
+      gap: var(--space-sm);
+      justify-content: flex-start;
+      border-top: 1px dashed var(--color-border);
+      padding-top: var(--space-sm);
+    }
+    .site-nav__link {
+      padding-inline: var(--space-sm);
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 380px) {
     .brand__tagline {
-      font-size: 0.68rem;
+      display: none;
+    }
+    .site-nav__list {
+      gap: var(--space-xs);
     }
   }
 </style>

@@ -5,6 +5,10 @@ import { profile } from "../data/profile";
 import { notes } from "../data/notes";
 
 const latestNotes = notes.slice(0, 3);
+const hasGreeting = profile.greetingJa || profile.greetingEn;
+const hasBio = profile.bio.length > 0;
+const hasInterests = profile.interests.length > 0;
+const hasNotes = latestNotes.length > 0;
 ---
 
 <BaseLayout>
@@ -12,47 +16,70 @@ const latestNotes = notes.slice(0, 3);
   <section class="hero">
     <div class="container hero__inner">
       <div class="hero__text">
-        <p class="hero__eyebrow" aria-hidden="true">研究室 — Kenkyūshitsu</p>
+        <p class="hero__eyebrow" aria-hidden="true">苦学 Lab — Kugaku Lab</p>
         <h1 class="hero__title">
           <span class="hero__title-main">{site.title}</span>
         </h1>
-        <p class="hero__greeting">{profile.greetingJa}</p>
-        <p class="hero__greeting-en">{profile.greetingEn}</p>
-        <p class="hero__bio">{profile.bio}</p>
+
+        {
+          hasGreeting && (
+            <>
+              {profile.greetingJa && (
+                <p class="hero__greeting">{profile.greetingJa}</p>
+              )}
+              {profile.greetingEn && (
+                <p class="hero__greeting-en">{profile.greetingEn}</p>
+              )}
+            </>
+          )
+        }
+
+        {hasBio && <p class="hero__bio">{profile.bio}</p>}
+
+        {
+          !hasBio && !hasGreeting && (
+            <p class="hero__bio hero__bio--placeholder">
+              研究と思索の場を、ここに静かに置いています。
+            </p>
+          )
+        }
+
         <div class="hero__actions">
-          <a href="/about/" class="btn btn--primary">プロフィールを見る</a>
-          <a href="/notes/" class="btn btn--ghost">ノートを読む</a>
+          <a href="/about/" class="btn btn--primary">プロフィール</a>
+          <a href="/notes/" class="btn btn--ghost">ノート</a>
         </div>
       </div>
 
       <aside class="hero__seal" aria-hidden="true">
         <div class="seal">
-          <span class="seal__char">研</span>
+          <span class="seal__char">苦</span>
         </div>
       </aside>
     </div>
   </section>
 
   <!-- ================= Interests ================= -->
-  <section class="section">
-    <div class="container">
-      <div class="section__head">
-        <h2 class="section__title">研究関心</h2>
-        <span class="section__rule" aria-hidden="true"></span>
-        <span class="section__kicker">Research Interests</span>
-      </div>
-      <ul class="interest-grid">
-        {
-          profile.interests.map((item) => (
-            <li class="interest-card">
-              <span class="interest-card__ja">{item.ja}</span>
-              <span class="interest-card__en">{item.en}</span>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
+  {
+    hasInterests && (
+      <section class="section">
+        <div class="container">
+          <div class="section__head">
+            <h2 class="section__title">研究関心</h2>
+            <span class="section__rule" aria-hidden="true" />
+            <span class="section__kicker">Research Interests</span>
+          </div>
+          <ul class="interest-grid">
+            {profile.interests.map((item) => (
+              <li class="interest-card">
+                <span class="interest-card__ja">{item.ja}</span>
+                <span class="interest-card__en">{item.en}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
   <!-- ================= Latest Notes ================= -->
   <section class="section section--surface">
@@ -62,23 +89,40 @@ const latestNotes = notes.slice(0, 3);
         <span class="section__rule" aria-hidden="true"></span>
         <span class="section__kicker">Latest Notes</span>
       </div>
-      <ul class="note-list">
-        {
-          latestNotes.map((n) => (
-            <li class="note-item">
-              <a href={n.url} target="_blank" rel="noopener noreferrer" class="note-item__link">
-                <time class="note-item__date">{n.date}</time>
-                <span class="note-item__title">{n.title}</span>
-                <span class="note-item__arrow" aria-hidden="true">→</span>
-              </a>
-              {n.excerpt && <p class="note-item__excerpt">{n.excerpt}</p>}
-            </li>
-          ))
-        }
-      </ul>
-      <div class="section__more">
-        <a href="/notes/">すべてのノートを見る →</a>
-      </div>
+
+      {
+        hasNotes ? (
+          <ul class="note-list">
+            {latestNotes.map((n) => (
+              <li class="note-item">
+                <a
+                  href={n.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="note-item__link"
+                >
+                  <time class="note-item__date">{n.date}</time>
+                  <span class="note-item__title">{n.title}</span>
+                  <span class="note-item__arrow" aria-hidden="true">
+                    →
+                  </span>
+                </a>
+                {n.excerpt && <p class="note-item__excerpt">{n.excerpt}</p>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="empty">まだ投稿はありません。</p>
+        )
+      }
+
+      {
+        hasNotes && (
+          <div class="section__more">
+            <a href="/notes/">すべてのノートを見る →</a>
+          </div>
+        )
+      }
     </div>
   </section>
 </BaseLayout>
@@ -87,7 +131,7 @@ const latestNotes = notes.slice(0, 3);
   /* ========== Hero ========== */
   .hero {
     position: relative;
-    padding-block: var(--space-3xl);
+    padding-block: clamp(var(--space-2xl), 4vw + 1rem, var(--space-3xl));
     overflow: hidden;
   }
 
@@ -98,12 +142,12 @@ const latestNotes = notes.slice(0, 3);
     background:
       radial-gradient(
         circle at 85% 20%,
-        rgba(183, 40, 46, 0.05) 0%,
+        rgba(27, 58, 107, 0.07) 0%,
         transparent 40%
       ),
       radial-gradient(
         circle at 10% 80%,
-        rgba(30, 58, 95, 0.04) 0%,
+        rgba(13, 21, 36, 0.05) 0%,
         transparent 45%
       );
     pointer-events: none;
@@ -120,7 +164,7 @@ const latestNotes = notes.slice(0, 3);
   .hero__eyebrow {
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.28em;
     color: var(--color-primary);
     text-transform: uppercase;
     margin: 0 0 var(--space-md);
@@ -128,9 +172,9 @@ const latestNotes = notes.slice(0, 3);
 
   .hero__title {
     font-family: var(--font-serif-jp);
-    font-size: clamp(2.5rem, 1.8rem + 3.6vw, 4.5rem);
+    font-size: clamp(2.25rem, 1.5rem + 3.2vw, 4.25rem);
     line-height: 1.1;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     font-weight: 700;
     margin: 0 0 var(--space-lg);
   }
@@ -162,6 +206,11 @@ const latestNotes = notes.slice(0, 3);
     margin: 0 0 var(--space-xl);
     color: var(--color-text);
   }
+  .hero__bio--placeholder {
+    color: var(--color-text-secondary);
+    font-family: var(--font-serif-jp);
+    letter-spacing: 0.08em;
+  }
 
   .hero__actions {
     display: flex;
@@ -169,10 +218,10 @@ const latestNotes = notes.slice(0, 3);
     flex-wrap: wrap;
   }
 
-  /* 落款風のシール */
+  /* 落款風シール */
   .seal {
-    width: 9rem;
-    height: 9rem;
+    width: clamp(6.5rem, 10vw, 9rem);
+    height: clamp(6.5rem, 10vw, 9rem);
     background: var(--color-primary);
     color: var(--color-surface);
     display: flex;
@@ -190,7 +239,7 @@ const latestNotes = notes.slice(0, 3);
 
   .seal__char {
     font-family: var(--font-serif-jp);
-    font-size: 5rem;
+    font-size: clamp(3.5rem, 6vw, 5rem);
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0;
@@ -202,6 +251,7 @@ const latestNotes = notes.slice(0, 3);
     align-items: center;
     justify-content: center;
     padding: 0.85em 1.6em;
+    min-height: 44px;
     font-family: var(--font-serif-jp);
     font-size: 0.95rem;
     letter-spacing: 0.12em;
@@ -258,11 +308,12 @@ const latestNotes = notes.slice(0, 3);
     align-items: center;
     gap: var(--space-md);
     margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
   }
 
   .section__title {
     font-family: var(--font-serif-jp);
-    font-size: 1.5rem;
+    font-size: clamp(1.25rem, 0.9rem + 1vw, 1.6rem);
     letter-spacing: 0.12em;
     margin: 0;
   }
@@ -272,6 +323,7 @@ const latestNotes = notes.slice(0, 3);
     height: 1px;
     background: var(--color-border-strong);
     max-width: 12rem;
+    min-width: 2rem;
   }
 
   .section__kicker {
@@ -296,7 +348,7 @@ const latestNotes = notes.slice(0, 3);
     margin: 0;
     display: grid;
     gap: var(--space-md);
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   }
 
   .interest-card {
@@ -305,7 +357,8 @@ const latestNotes = notes.slice(0, 3);
     padding: var(--space-lg);
     border-radius: var(--radius-sm);
     position: relative;
-    transition: border-color var(--dur-base) var(--ease),
+    transition:
+      border-color var(--dur-base) var(--ease),
       box-shadow var(--dur-base) var(--ease);
     display: flex;
     flex-direction: column;
@@ -396,7 +449,8 @@ const latestNotes = notes.slice(0, 3);
   .note-item__arrow {
     font-family: var(--font-serif-jp);
     color: var(--color-text-secondary);
-    transition: transform var(--dur-base) var(--ease),
+    transition:
+      transform var(--dur-base) var(--ease),
       color var(--dur-base) var(--ease);
   }
 
@@ -411,7 +465,21 @@ const latestNotes = notes.slice(0, 3);
     font-size: 0.9rem;
   }
 
+  .empty {
+    text-align: center;
+    color: var(--color-text-secondary);
+    padding: var(--space-xl) 0;
+    font-family: var(--font-serif-jp);
+    letter-spacing: 0.08em;
+  }
+
   /* ========== Responsive ========== */
+  @media (max-width: 900px) {
+    .hero__inner {
+      gap: var(--space-xl);
+    }
+  }
+
   @media (max-width: 768px) {
     .hero {
       padding-block: var(--space-2xl);
@@ -422,23 +490,46 @@ const latestNotes = notes.slice(0, 3);
     }
     .hero__seal {
       justify-self: flex-start;
+      order: -1;
     }
     .seal {
-      width: 6rem;
-      height: 6rem;
+      width: 6.5rem;
+      height: 6.5rem;
     }
     .seal__char {
-      font-size: 3.3rem;
+      font-size: 3.6rem;
     }
+    .hero__title-main {
+      padding-left: var(--space-md);
+    }
+  }
 
+  @media (max-width: 560px) {
     .note-item__link {
       grid-template-columns: 1fr auto;
     }
     .note-item__date {
       grid-column: 1 / -1;
+      margin-bottom: var(--space-xs);
     }
     .note-item__excerpt {
       margin-left: 0;
+    }
+    .btn {
+      flex: 1 1 auto;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .hero__actions {
+      gap: var(--space-sm);
+    }
+    .seal {
+      width: 5.5rem;
+      height: 5.5rem;
+    }
+    .seal__char {
+      font-size: 3rem;
     }
   }
 </style>
