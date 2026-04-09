@@ -1,6 +1,6 @@
-# KUGAKU.github.io
+# 苦学 Lab — KUGAKU.github.io
 
-研究者ポートフォリオサイト。Astro で構築され、GitHub Pages にデプロイされます。
+研究と思索の記録。Astro で構築され、GitHub Pages にデプロイされます。
 
 ## Pages
 
@@ -11,7 +11,7 @@
 ## Stack
 
 - [Astro](https://astro.build/) — 静的サイトジェネレータ
-- 和風デザインシステム (`src/styles/global.css`)
+- 和風デザインシステム (藍 × 墨 / `src/styles/global.css`)
 - Noto Sans JP + Shippori Mincho (Google Fonts)
 
 ## Development
@@ -28,6 +28,8 @@ npm run preview
 - サイト全体の設定:   `src/data/site.ts`
 - プロフィール・CV:   `src/data/profile.ts`
 - note 投稿リンク:    `src/data/notes.ts`
+
+データが空のセクションは自動で非表示になります。
 
 ## Deploy
 

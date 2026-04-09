@@ -1,40 +1,41 @@
 /* =========================================================
-   和風デザインシステム — 研究者ポートフォリオ
-   Japanese-inspired design system for a researcher portfolio
+   和風デザインシステム — 苦学 Lab
+   Japanese-inspired design system — blue & black edition
    ========================================================= */
 
 :root {
-  /* ---------- Color Palette: 和色 (traditional Japanese hues) ---------- */
-  /* Background — 生成り (kinari / unbleached) */
-  --color-bg: #f5f0e6;
-  /* Surface — 胡粉 (gofun / shell white) */
-  --color-surface: #fbf7ee;
-  /* Surface alt — slightly warmer */
-  --color-surface-alt: #efe7d4;
+  /* ---------- Color Palette: 藍と墨 (indigo & ink) ---------- */
+  /* Background — 白藍 (shiroai / very pale cool) */
+  --color-bg: #f3f5f9;
+  /* Surface — 素白 (suhaku) */
+  --color-surface: #ffffff;
+  /* Surface alt — 白鼠 (shironezu) */
+  --color-surface-alt: #e7ebf2;
 
-  /* Text — 墨 (sumi / ink) */
-  --color-text: #1f1c1a;
-  /* Secondary text — 鈍色 (nibiiro) */
-  --color-text-secondary: #6b6560;
+  /* Text — 墨 (sumi / ink), slightly blue-tinted */
+  --color-text: #0d1524;
+  /* Secondary text — 鈍色 (nibiiro) with cool cast */
+  --color-text-secondary: #4a5568;
   /* Disabled — 薄墨 (usuzumi) */
-  --color-text-disabled: #a49d96;
+  --color-text-disabled: #94a1b3;
 
-  /* Primary — 朱 (ake / vermillion) */
-  --color-primary: #b7282e;
-  --color-primary-dark: #8f1e22;
+  /* Primary — 藍 (ai / indigo) */
+  --color-primary: #1b3a6b;
+  --color-primary-dark: #0f2347;
 
-  /* Secondary — 藍墨 (aisumi / indigo-ink) */
-  --color-accent: #1e3a5f;
-  --color-accent-soft: #4f7c8f; /* 浅葱 asagi */
+  /* Accent — 墨 (sumi / ink black) */
+  --color-accent: #0d1524;
+  /* Soft accent — 浅葱 (asagi / pale blue) */
+  --color-accent-soft: #4f7c8f;
 
   /* Borders & dividers */
-  --color-border: #d9cfb8;
-  --color-border-strong: #b8ac8e;
+  --color-border: #d5dae3;
+  --color-border-strong: #9fa8b8;
 
   /* Semantic */
-  --color-danger: #b7282e;
-  --color-warning: #c98a1b;
-  --color-success: #4a6b3c; /* 松葉色 matsuba */
+  --color-danger: #9b2c2c;
+  --color-warning: #b7791f;
+  --color-success: #2f5540; /* 常磐 tokiwa */
 
   /* ---------- Typography ---------- */
   --font-serif-jp:
@@ -57,16 +58,16 @@
   --space-3xl: 6rem;   /* 96px */
 
   /* ---------- Container ---------- */
-  --container-max: 72rem;  /* 1152px */
+  --container-max: 72rem;   /* 1152px */
   --container-narrow: 44rem; /* 704px */
   --container-pad: clamp(1rem, 4vw, 2.5rem);
 
   /* ---------- Elevation ---------- */
-  --shadow-1: 0 1px 2px rgba(31, 28, 26, 0.06);
-  --shadow-2: 0 4px 12px rgba(31, 28, 26, 0.08);
-  --shadow-3: 0 12px 32px rgba(31, 28, 26, 0.12);
+  --shadow-1: 0 1px 2px rgba(13, 21, 36, 0.06);
+  --shadow-2: 0 4px 12px rgba(13, 21, 36, 0.08);
+  --shadow-3: 0 12px 32px rgba(13, 21, 36, 0.14);
 
-  /* ---------- Radius — 控えめ (subtle) ---------- */
+  /* ---------- Radius — 控えめ ---------- */
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
@@ -106,26 +107,26 @@ body {
   word-break: normal;
   overflow-wrap: break-word;
   line-break: strict;
-  /* Subtle traditional paper (和紙) texture using layered gradients */
+  /* Subtle cool paper texture using layered gradients */
   background-image:
     radial-gradient(
       ellipse at top,
-      rgba(255, 252, 242, 0.6) 0%,
+      rgba(255, 255, 255, 0.65) 0%,
       transparent 60%
     ),
     repeating-linear-gradient(
       45deg,
-      rgba(183, 40, 46, 0.008) 0px,
-      rgba(183, 40, 46, 0.008) 1px,
+      rgba(27, 58, 107, 0.012) 0px,
+      rgba(27, 58, 107, 0.012) 1px,
       transparent 1px,
-      transparent 5px
+      transparent 6px
     ),
     repeating-linear-gradient(
       -45deg,
-      rgba(30, 58, 95, 0.006) 0px,
-      rgba(30, 58, 95, 0.006) 1px,
+      rgba(13, 21, 36, 0.008) 0px,
+      rgba(13, 21, 36, 0.008) 1px,
       transparent 1px,
-      transparent 7px
+      transparent 8px
     );
   background-attachment: fixed;
 }
@@ -169,9 +170,9 @@ p {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-primary);
   text-decoration: none;
-  border-bottom: 1px solid rgba(30, 58, 95, 0.25);
+  border-bottom: 1px solid rgba(27, 58, 107, 0.25);
   transition:
     color var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease);
@@ -179,8 +180,8 @@ a {
 
 a:hover,
 a:focus-visible {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+  color: var(--color-primary-dark);
+  border-bottom-color: var(--color-primary-dark);
 }
 
 a:focus-visible {
@@ -246,11 +247,19 @@ hr {
   vertical-align: middle;
 }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 640px) {
+/* ---------- Responsive: global type scale ---------- */
+@media (max-width: 768px) {
+  body {
+    font-size: 15.5px;
+    line-height: 1.8;
+  }
+}
+
+@media (max-width: 480px) {
   body {
     font-size: 15px;
-    line-height: 1.8;
+    line-height: 1.78;
+    letter-spacing: 0.03em;
   }
 }
 

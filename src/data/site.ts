@@ -2,17 +2,17 @@
 // Edit this file to customize the portfolio site.
 
 export const site = {
-  title: "KUGAKU 研究室",
-  tagline: "研究・思索・記録",
+  title: "苦学 Lab",
+  tagline: "Kugaku Lab — 研究と思索の記録",
   description:
-    "研究者のポートフォリオサイト。プロフィール、研究内容、そしてnoteに綴る記録をまとめています。",
+    "苦学 Lab — 研究者のポートフォリオサイト。プロフィール、研究関心、そしてnoteに綴る記録をまとめています。",
   author: {
-    name: "KUGAKU",
+    name: "苦学",
     nameEn: "Kugaku",
-    role: "研究者 / Researcher",
+    role: "",
     affiliation: "",
     email: "",
-    location: "日本",
+    location: "",
   },
   // ナビゲーション
   nav: [
@@ -20,9 +20,9 @@ export const site = {
     { href: "/about/", label: "プロフィール", labelEn: "About" },
     { href: "/notes/", label: "ノート", labelEn: "Notes" },
   ],
-  // ソーシャルリンク
+  // ソーシャルリンク (空文字にするとフッターに表示されません)
   social: {
-    note: "https://note.com/",
+    note: "",
     github: "https://github.com/KUGAKU",
     twitter: "",
     scholar: "",
