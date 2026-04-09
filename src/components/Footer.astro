@@ -1,0 +1,128 @@
+---
+import { site } from "../data/site";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__col">
+      <p class="site-footer__title">{site.title}</p>
+      <p class="site-footer__tagline">{site.tagline}</p>
+    </div>
+
+    <nav class="site-footer__links" aria-label="フッターリンク">
+      {
+        site.social.note && (
+          <a href={site.social.note} target="_blank" rel="noopener noreferrer">
+            note
+          </a>
+        )
+      }
+      {
+        site.social.github && (
+          <a href={site.social.github} target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+        )
+      }
+      {
+        site.social.twitter && (
+          <a
+            href={site.social.twitter}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            X (Twitter)
+          </a>
+        )
+      }
+      {
+        site.social.scholar && (
+          <a
+            href={site.social.scholar}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google Scholar
+          </a>
+        )
+      }
+    </nav>
+
+    <p class="site-footer__copy">
+      © {year} {site.author.name}. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-3xl);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding-block: var(--space-xl);
+    color: var(--color-text-secondary);
+    font-size: 0.85rem;
+  }
+
+  .site-footer__inner {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+
+  .site-footer__title {
+    font-family: var(--font-serif-jp);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--color-text);
+    margin: 0 0 0.3em;
+  }
+
+  .site-footer__tagline {
+    margin: 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    justify-content: flex-end;
+  }
+
+  .site-footer__links a {
+    font-family: var(--font-serif-jp);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid transparent;
+  }
+  .site-footer__links a:hover {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+
+  .site-footer__copy {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding-top: var(--space-md);
+    border-top: 1px dashed var(--color-border);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 640px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr;
+    }
+    .site-footer__links {
+      justify-content: flex-start;
+    }
+  }
+</style>

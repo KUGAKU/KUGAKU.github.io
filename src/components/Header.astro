@@ -1,0 +1,193 @@
+---
+import { site } from "../data/site";
+
+interface Props {
+  currentPath?: string;
+}
+const { currentPath = "/" } = Astro.props;
+
+// Normalize path for matching (ignore trailing slash)
+const normalize = (p: string) => {
+  const s = p.replace(/\/+$/, "");
+  return s === "" ? "/" : s;
+};
+const current = normalize(currentPath);
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="/" class="brand" aria-label={`${site.title} トップへ`}>
+      <span class="brand__mark" aria-hidden="true">研</span>
+      <span class="brand__text">
+        <span class="brand__title">{site.title}</span>
+        <span class="brand__tagline">{site.tagline}</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="グローバルナビゲーション">
+      <ul class="site-nav__list">
+        {
+          site.nav.map((item) => {
+            const isCurrent = normalize(item.href) === current;
+            return (
+              <li class="site-nav__item">
+                <a
+                  href={item.href}
+                  class={`site-nav__link${isCurrent ? " is-current" : ""}`}
+                  aria-current={isCurrent ? "page" : undefined}
+                >
+                  <span class="site-nav__ja">{item.label}</span>
+                  <span class="site-nav__en">{item.labelEn}</span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+  }
+
+  /* 朱線: subtle vermilion accent rule at the bottom */
+  .site-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--color-primary) 12%,
+      var(--color-primary) 88%,
+      transparent 100%
+    );
+    opacity: 0.35;
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding-block: var(--space-lg);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-md);
+    color: var(--color-text);
+    border-bottom: none;
+  }
+  .brand:hover {
+    color: var(--color-text);
+  }
+
+  .brand__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: var(--color-primary);
+    color: var(--color-surface);
+    font-family: var(--font-serif-jp);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-1);
+    flex-shrink: 0;
+  }
+
+  .brand__text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+
+  .brand__title {
+    font-family: var(--font-serif-jp);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  .brand__tagline {
+    font-size: 0.72rem;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.2em;
+    margin-top: 2px;
+  }
+
+  .site-nav__list {
+    display: flex;
+    gap: var(--space-lg);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-nav__link {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: var(--space-sm) var(--space-xs);
+    color: var(--color-text);
+    font-family: var(--font-serif-jp);
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    border-bottom: 1px solid transparent;
+    line-height: 1.2;
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link:focus-visible {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+
+  .site-nav__link.is-current {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+
+  .site-nav__en {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+
+  .site-nav__link.is-current .site-nav__en {
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 640px) {
+    .site-header__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-md);
+      padding-block: var(--space-md);
+    }
+
+    .site-nav__list {
+      gap: var(--space-md);
+    }
+
+    .brand__tagline {
+      font-size: 0.68rem;
+    }
+  }
+</style>
