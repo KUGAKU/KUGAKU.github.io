@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import BitRain from "../BitRain.astro";
 import { site } from "../../data/site";
 import { profile } from "../../data/profile";
 import { notes } from "../../data/notes";
@@ -21,6 +22,7 @@ const siteTitle = lang === "ja" ? "苦学 Lab" : "Kugaku Lab";
 <BaseLayout>
   <!-- ================= Hero ================= -->
   <section class="hero">
+    <BitRain />
     <div class="container hero__inner">
       <div class="hero__text">
         <h1 class="hero__title">
@@ -145,12 +147,14 @@ const siteTitle = lang === "ja" ? "苦学 Lab" : "Kugaku Lab";
     position: relative;
     padding-block: clamp(var(--space-2xl), 4vw + 1rem, var(--space-3xl));
     overflow: hidden;
+    isolation: isolate;
   }
 
   .hero::before {
     content: "";
     position: absolute;
     inset: 0;
+    z-index: 0;
     background:
       radial-gradient(
         circle at 85% 20%,
@@ -171,6 +175,7 @@ const siteTitle = lang === "ja" ? "苦学 Lab" : "Kugaku Lab";
     gap: var(--space-2xl);
     align-items: center;
     position: relative;
+    z-index: 2;
   }
 
   .hero__title {
