@@ -1,4 +1,4 @@
-# 苦学 Lab — KUGAKU.github.io
+# 苦学 log — KUGAKU.github.io
 
 研究と思索の記録。Astro で構築され、GitHub Pages にデプロイされます。
 
