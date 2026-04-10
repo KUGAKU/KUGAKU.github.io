@@ -1,6 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="4" fill="#059669"/>
-  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
-        font-family="'Shippori Mincho','Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',serif"
-        font-size="44" font-weight="700" fill="#ffffff">苦</text>
+  <rect width="64" height="64" rx="2" fill="#059669"/>
+  <g fill="#ffffff">
+    <!-- 艹 / ⺍ -->
+    <rect x="10" y="8"  width="8"  height="16"/>
+    <rect x="28" y="8"  width="8"  height="16"/>
+    <rect x="46" y="8"  width="8"  height="16"/>
+    <!-- 一 / 冖 -->
+    <rect x="6"  y="28" width="52" height="6"/>
+    <!-- 十 / 子 -->
+    <rect x="28" y="38" width="8"  height="18"/>
+    <rect x="16" y="44" width="32" height="6"/>
+  </g>
 </svg>

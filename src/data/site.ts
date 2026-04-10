@@ -39,8 +39,8 @@ export interface Site {
 
 export const site: Site = {
   title: {
-    ja: "苦学 Lab",
-    en: "Kugaku Lab",
+    ja: "苦学 log",
+    en: "Kugaku log",
   },
   // タグラインはヘッダー/フッターの小さいサブタイトル。空にすると非表示。
   tagline: {
@@ -48,8 +48,8 @@ export const site: Site = {
     en: "",
   },
   description: {
-    ja: "苦学 Lab — エンジニアリング / コンサルティング / 情報学。",
-    en: "Kugaku Lab — Engineering, consulting, informatics.",
+    ja: "苦学 log — エンジニアリング / コンサルティング / 情報学。",
+    en: "Kugaku log — Engineering, consulting, informatics.",
   },
   author: {
     name: {

@@ -1,0 +1,35 @@
+---
+// 苦学 log のロゴマーク。
+//
+// 「苦」と「学」の両方に共通する構造をそのまま幾何化したもの:
+//   ・上段の 3 本縦棒 (苦の艹 / 学の⺍)
+//   ・仕切りの水平棒 (苦の一 / 学の冖)
+//   ・下段の縦軸 + 横棒 (苦の十 / 学の子の中心)
+//
+// 色は currentColor を継承するので、親要素の `color` プロパティで制御できる。
+// 背景色は親側で決める (このコンポーネントは文字色だけを塗る)。
+
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<svg
+  class={className}
+  viewBox="0 0 64 64"
+  aria-hidden="true"
+  focusable="false"
+>
+  <!-- ===== 上段: 艹 / ⺍ (3 本の縦棒) ===== -->
+  <rect x="10" y="8"  width="8"  height="16" fill="currentColor"></rect>
+  <rect x="28" y="8"  width="8"  height="16" fill="currentColor"></rect>
+  <rect x="46" y="8"  width="8"  height="16" fill="currentColor"></rect>
+
+  <!-- ===== 中段: 一 / 冖 (水平棒) ===== -->
+  <rect x="6"  y="28" width="52" height="6"  fill="currentColor"></rect>
+
+  <!-- ===== 下段: 十 / 子 の中心骨格 ===== -->
+  <rect x="28" y="38" width="8"  height="18" fill="currentColor"></rect>
+  <rect x="16" y="44" width="32" height="6"  fill="currentColor"></rect>
+</svg>
