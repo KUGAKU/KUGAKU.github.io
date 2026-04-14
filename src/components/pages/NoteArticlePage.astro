@@ -8,18 +8,23 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content, headings } = await entry.render();
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
 const backHref = localizePath("/notes/", lang);
 const backLabel = lang === "ja" ? "← ノート一覧に戻る" : "← Back to all notes";
+
+// Only show h2 and h3 in TOC
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const tocLabel = lang === "ja" ? "目次" : "Contents";
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.excerpt}>
   <article class="note-article">
-    <div class="container container--narrow">
+    <div class="container note-article__layout">
+      <div class="note-article__main">
       <!-- Back link (top) -->
       <nav class="note-article__back" aria-label={backLabel}>
         <a href={backHref}>{backLabel}</a>
@@ -58,13 +63,155 @@ const backLabel = lang === "ja" ? "← ノート一覧に戻る" : "← Back to 
       <nav class="note-article__back note-article__back--bottom">
         <a href={backHref}>{backLabel}</a>
       </nav>
+      </div>
+
+      {
+        tocHeadings.length > 0 && (
+          <aside class="note-article__toc" aria-label={tocLabel}>
+            <div class="note-article__toc-inner">
+              <p class="note-article__toc-title">{tocLabel}</p>
+              <ul class="note-article__toc-list">
+                {tocHeadings.map((h) => (
+                  <li
+                    class:list={[
+                      "note-article__toc-item",
+                      `note-article__toc-item--d${h.depth}`,
+                    ]}
+                  >
+                    <a href={`#${h.slug}`} data-toc-link={h.slug}>
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </aside>
+        )
+      }
     </div>
   </article>
+
+  <script>
+    const links = document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]");
+    if (links.length > 0) {
+      const bySlug = new Map<string, HTMLAnchorElement>();
+      links.forEach((a) => bySlug.set(a.dataset.tocLink!, a));
+
+      const targets: HTMLElement[] = [];
+      bySlug.forEach((_, slug) => {
+        const el = document.getElementById(slug);
+        if (el) targets.push(el);
+      });
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const link = bySlug.get(entry.target.id);
+            if (!link) return;
+            if (entry.isIntersecting) {
+              links.forEach((l) => l.classList.remove("is-active"));
+              link.classList.add("is-active");
+            }
+          });
+        },
+        { rootMargin: "0% 0% -70% 0%", threshold: 0 }
+      );
+      targets.forEach((t) => observer.observe(t));
+    }
+  </script>
 </BaseLayout>
 
 <style>
   .note-article {
     padding-block: var(--space-2xl);
+  }
+
+  /* ========= Layout with TOC sidebar ========= */
+  .note-article__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2xl);
+  }
+  .note-article__main {
+    min-width: 0;
+    max-width: var(--container-narrow);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .note-article__layout {
+      grid-template-columns: minmax(0, 1fr) 16rem;
+      align-items: start;
+      max-width: calc(var(--container-narrow) + 16rem + var(--space-2xl));
+    }
+    .note-article__main {
+      margin-inline: 0;
+    }
+  }
+
+  /* ========= TOC ========= */
+  .note-article__toc {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .note-article__toc {
+      display: block;
+      position: sticky;
+      top: var(--space-xl);
+      align-self: start;
+      max-height: calc(100vh - var(--space-xl) * 2);
+      overflow-y: auto;
+    }
+  }
+  .note-article__toc-inner {
+    border-left: 1px solid var(--color-border);
+    padding-left: var(--space-lg);
+  }
+  .note-article__toc-title {
+    font-family: var(--font-serif-jp);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-md);
+    text-transform: uppercase;
+  }
+  .note-article__toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+  .note-article__toc-item {
+    margin-bottom: 0.45em;
+  }
+  .note-article__toc-item--d3 {
+    padding-left: var(--space-md);
+    font-size: 0.8rem;
+  }
+  .note-article__toc-item a {
+    color: var(--color-text-secondary);
+    border-bottom: none;
+    display: block;
+    padding: 2px 0;
+    transition: color 0.15s ease;
+  }
+  .note-article__toc-item a:hover {
+    color: var(--color-primary);
+  }
+  .note-article__toc-item a.is-active {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  /* Smooth-scroll for anchor jumps */
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+  .prose :global(h2),
+  .prose :global(h3) {
+    scroll-margin-top: var(--space-xl);
   }
 
   /* ========= Back link ========= */
