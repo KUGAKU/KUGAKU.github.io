@@ -20,6 +20,13 @@ const authorName = pick(site.author.name, lang);
 
     <nav class="site-footer__links" aria-label={lang === "ja" ? "フッターリンク" : "Footer links"}>
       {
+        site.author.email && (
+          <a href={`mailto:${site.author.email}`}>
+            ✉ {site.author.email}
+          </a>
+        )
+      }
+      {
         site.social.note && (
           <a href={site.social.note} target="_blank" rel="noopener noreferrer">
             note
@@ -29,7 +36,7 @@ const authorName = pick(site.author.name, lang);
       {
         site.social.github && (
           <a href={site.social.github} target="_blank" rel="noopener noreferrer">
-            GitHub
+            GitHub: KUGAKU
           </a>
         )
       }

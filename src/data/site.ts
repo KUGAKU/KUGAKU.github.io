@@ -62,7 +62,7 @@ export const site: Site = {
       en: ["Engineering", "Consulting", "Informatics"],
     },
     affiliation: { ja: "", en: "" },
-    email: "",
+    email: "gaku.yamamoto.business@gmail.com",
     location: { ja: "", en: "" },
   },
   // ナビゲーション (labelは翻訳キーから解決されます)
