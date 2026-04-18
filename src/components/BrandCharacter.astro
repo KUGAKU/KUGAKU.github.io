@@ -1,0 +1,112 @@
+---
+// BrandMark をモチーフにしたキャラクター。
+//
+// ロゴの幾何学構造をそのまま「顔」にして、
+// 目・足・腕を矩形だけで追加したもの。
+// 丸は一切使わない (ロゴの直線・矩形の世界観を維持)。
+//
+// mood で表情を切り替えられる:
+//   - "neutral"  — ふつう
+//   - "crying"   — 泣いている (404 等)
+//   - "happy"    — にこにこ
+
+interface Props {
+  class?: string;
+  mood?: "neutral" | "crying" | "happy";
+}
+const { class: className, mood = "neutral" } = Astro.props;
+---
+
+<svg
+  class:list={[className, `mood--${mood}`]}
+  viewBox="0 0 80 90"
+  aria-hidden="true"
+  focusable="false"
+  style="overflow:visible"
+>
+  <!-- ===== 頭部 (BrandMark と同じ構造) ===== -->
+  <!-- 上段: 艹 / ⺍ (3 本の髪) -->
+  <rect class="hair" x="16" y="4"  width="8"  height="14" fill="currentColor" />
+  <rect class="hair" x="36" y="4"  width="8"  height="14" fill="currentColor" />
+  <rect class="hair" x="56" y="4"  width="8"  height="14" fill="currentColor" />
+
+  <!-- 中段: 一 / 冖 (額の水平棒) -->
+  <rect x="12" y="22" width="56" height="6" fill="currentColor" />
+
+  <!-- ===== 顔エリア (目が入る空間) ===== -->
+  <!-- 顔の輪郭 (背景矩形) -->
+  <rect x="12" y="28" width="56" height="20" fill="currentColor" opacity="0.1" />
+
+  <!-- 目 -->
+  {mood === "crying" ? (
+    <!-- 泣き目: 下向きの細い横棒 (しょんぼり) -->
+    <rect class="eye eye--left"  x="22" y="37" width="10" height="3" fill="currentColor" />
+    <rect class="eye eye--right" x="48" y="37" width="10" height="3" fill="currentColor" />
+    <!-- 涙 -->
+    <rect class="tear tear--left"  x="25" y="41" width="4" height="7" fill="currentColor" opacity="0.4" />
+    <rect class="tear tear--right" x="51" y="41" width="4" height="7" fill="currentColor" opacity="0.4" />
+  ) : mood === "happy" ? (
+    <!-- 笑い目: 上向きアーチを矩形 2 本で表現 (^ ^) -->
+    <rect class="eye eye--left"  x="22" y="36" width="5" height="3" fill="currentColor" transform="rotate(-20 24.5 37.5)" />
+    <rect class="eye eye--left"  x="27" y="36" width="5" height="3" fill="currentColor" transform="rotate(20 29.5 37.5)" />
+    <rect class="eye eye--right" x="48" y="36" width="5" height="3" fill="currentColor" transform="rotate(-20 50.5 37.5)" />
+    <rect class="eye eye--right" x="53" y="36" width="5" height="3" fill="currentColor" transform="rotate(20 55.5 37.5)" />
+  ) : (
+    <!-- 普通目: 小さな正方形 -->
+    <rect class="eye eye--left"  x="24" y="34" width="6" height="6" fill="currentColor" />
+    <rect class="eye eye--right" x="50" y="34" width="6" height="6" fill="currentColor" />
+  )}
+
+  <!-- ===== 胴体 (ロゴ下段の構造) ===== -->
+  <!-- 下段: 十 / 子 の中心骨格 → 胴体 -->
+  <rect x="34" y="48" width="12" height="22" fill="currentColor" />
+  <!-- 腕 (横棒を腕として解釈) -->
+  <rect class="arm arm--left"  x="14" y="54" width="20" height="6" fill="currentColor" />
+  <rect class="arm arm--right" x="46" y="54" width="20" height="6" fill="currentColor" />
+
+  <!-- ===== 足 ===== -->
+  <rect class="leg leg--left"  x="26" y="70" width="8" height="12" fill="currentColor" />
+  <rect class="leg leg--right" x="46" y="70" width="8" height="12" fill="currentColor" />
+  <!-- 足元 (靴) -->
+  <rect x="22" y="78" width="12" height="4" fill="currentColor" />
+  <rect x="46" y="78" width="12" height="4" fill="currentColor" />
+</svg>
+
+<style>
+  /* ===== 泣きアニメーション ===== */
+  .mood--crying {
+    animation: sob 2s ease-in-out infinite;
+  }
+
+  .mood--crying .tear {
+    animation: tear-fall 1.6s ease-in infinite;
+  }
+
+  .mood--crying .tear--right {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes sob {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    15%      { transform: translateY(-2px) rotate(-1.5deg); }
+    30%      { transform: translateY(0) rotate(0deg); }
+    45%      { transform: translateY(-1.5px) rotate(1deg); }
+    60%      { transform: translateY(0) rotate(0deg); }
+  }
+
+  @keyframes tear-fall {
+    0%   { opacity: 0; transform: translateY(0); }
+    20%  { opacity: 0.5; }
+    100% { opacity: 0; transform: translateY(10px); }
+  }
+
+  /* ===== にこにこアニメーション ===== */
+  .mood--happy {
+    animation: bounce 2.5s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+  }
+</style>
